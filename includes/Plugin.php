@@ -14,7 +14,10 @@ final class Plugin {
     private function __construct() {
         // Register activation hook.
         register_activation_hook( __DIR__ . '/../bil24-connector.php', [ self::class, 'activate' ] );
-
+        /*** Admin UI ***/              // NEW
+        if ( is_admin() ) {             // NEW
+            ( new \Bil24\Admin\SettingsPage() )->register();  // NEW
+        }                               // NEW
         // Init hooks.
         add_action( 'init', [ $this, 'register_cpt' ] );
     }
