@@ -188,6 +188,106 @@ class Endpoints {
     }
 
     /**
+     * Create reservation for tickets
+     */
+    public function create_reservation( array $data ): array {
+        return $this->client->post( '/reservations', $data );
+    }
+
+    /**
+     * Update reservation
+     */
+    public function update_reservation( string $reservation_id, array $data ): array {
+        return $this->client->put( "/reservations/{$reservation_id}", $data );
+    }
+
+    /**
+     * Cancel reservation
+     */
+    public function cancel_reservation( string $reservation_id ): array {
+        return $this->client->delete( "/reservations/{$reservation_id}" );
+    }
+
+    /**
+     * Extend reservation
+     */
+    public function extend_reservation( string $reservation_id, array $data ): array {
+        return $this->client->post( "/reservations/{$reservation_id}/extend", $data );
+    }
+
+    /**
+     * Confirm reservation (convert to confirmed tickets)
+     */
+    public function confirm_reservation( string $reservation_id ): array {
+        return $this->client->post( "/reservations/{$reservation_id}/confirm", [] );
+    }
+
+    /**
+     * Generate tickets for order
+     */
+    public function generate_tickets( string $order_id ): array {
+        return $this->client->post( "/orders/{$order_id}/tickets", [] );
+    }
+
+
+
+    /**
+     * Update order payment information
+     */
+    public function update_order_payment( string $order_id, array $payment_data ): array {
+        return $this->client->put( "/orders/{$order_id}/payment", $payment_data );
+    }
+
+    /**
+     * Refund order
+     */
+    public function refund_order( string $order_id, array $refund_data ): array {
+        return $this->client->post( "/orders/{$order_id}/refunds", $refund_data );
+    }
+
+    /**
+     * Create customer in Bil24
+     */
+    public function create_customer( array $customer_data ): array {
+        return $this->client->post( '/customers', $customer_data );
+    }
+
+    /**
+     * Update customer in Bil24
+     */
+    public function update_customer( string $customer_id, array $customer_data ): array {
+        return $this->client->put( "/customers/{$customer_id}", $customer_data );
+    }
+
+    /**
+     * Get customer from Bil24
+     */
+    public function get_customer( string $customer_id ): array {
+        return $this->client->get( "/customers/{$customer_id}" );
+    }
+
+    /**
+     * Update customer statistics
+     */
+    public function update_customer_stats( string $customer_id, array $stats_data ): array {
+        return $this->client->put( "/customers/{$customer_id}/stats", $stats_data );
+    }
+
+    /**
+     * Anonymize customer (GDPR compliance)
+     */
+    public function anonymize_customer( string $customer_id ): array {
+        return $this->client->post( "/customers/{$customer_id}/anonymize", [] );
+    }
+
+    /**
+     * Get event availability
+     */
+    public function get_event_availability( string $event_id ): array {
+        return $this->client->get( "/events/{$event_id}/availability" );
+    }
+
+    /**
      * UTILITY METHODS
      */
 
@@ -227,6 +327,20 @@ class Endpoints {
     }
 
     /**
+     * Get event sessions
+     */
+    public function get_event_sessions( string $event_id ): array {
+        return $this->client->get( "/events/{$event_id}/sessions" );
+    }
+
+    /**
+     * Get event price categories
+     */
+    public function get_event_price_categories( string $event_id ): array {
+        return $this->client->get( "/events/{$event_id}/price-categories" );
+    }
+
+    /**
      * SYNC HELPERS
      */
 
@@ -263,5 +377,35 @@ class Endpoints {
      */
     public function clear_cache(): void {
         $this->client->clear_cache();
+    }
+
+    /**
+     * Get API status and health check
+     */
+    public function get_status(): array {
+        return $this->client->get( '/status' );
+    }
+
+    /**
+     * Get API version information
+     */
+    public function get_version(): array {
+        return $this->client->get( '/version' );
+    }
+
+    /**
+     * Send webhook test
+     */
+    public function test_webhook( string $webhook_url ): array {
+        return $this->client->post( '/webhooks/test', [
+            'url' => $webhook_url
+        ] );
+    }
+
+    /**
+     * Get statistics and analytics
+     */
+    public function get_analytics( array $params = [] ): array {
+        return $this->client->get( '/analytics', $params );
     }
 } 

@@ -1,0 +1,573 @@
+/**
+ * Bil24 Frontend Styles
+ * CSS for WooCommerce integration frontend elements
+ */
+
+/* ==========================================================================
+   Availability Indicators
+   ========================================================================== */
+
+.bil24-availability {
+    margin: 10px 0;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.bil24-availability.available {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.bil24-availability.unavailable {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.bil24-availability .availability-icon {
+    margin-right: 5px;
+    font-weight: bold;
+}
+
+.bil24-real-time-availability {
+    margin: 15px 0;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.bil24-real-time-availability.available {
+    background-color: #d1f2eb;
+    color: #0c5460;
+    border: 2px solid #17a2b8;
+}
+
+.bil24-real-time-availability.low-stock {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 2px solid #ffc107;
+}
+
+.bil24-real-time-availability.unavailable {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 2px solid #dc3545;
+}
+
+.bil24-real-time-availability .stock-icon {
+    margin-right: 8px;
+    font-size: 16px;
+}
+
+/* ==========================================================================
+   Reservation Timer & Notices
+   ========================================================================== */
+
+.bil24-reservation-notice {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    color: #856404;
+    padding: 15px 20px;
+    border-radius: 5px;
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.bil24-reservation-notice strong {
+    font-weight: 600;
+}
+
+#bil24-countdown {
+    font-family: 'Courier New', monospace;
+    font-size: 18px;
+    font-weight: bold;
+    color: #856404;
+    background-color: #fff;
+    padding: 5px 10px;
+    border-radius: 3px;
+    border: 1px solid #ffeaa7;
+    margin: 0 10px;
+}
+
+#bil24-countdown.warning {
+    color: #e67e22;
+    border-color: #e67e22;
+    animation: pulse-warning 1s infinite;
+}
+
+#bil24-countdown.critical {
+    color: #e74c3c;
+    border-color: #e74c3c;
+    animation: pulse-critical 0.5s infinite;
+}
+
+@keyframes pulse-warning {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes pulse-critical {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+#bil24-extend-reservation {
+    background-color: #007cba;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 13px;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+#bil24-extend-reservation:hover {
+    background-color: #005a87;
+}
+
+#bil24-extend-reservation:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.bil24-reservation-expired {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 15px 20px;
+    border-radius: 5px;
+    margin: 20px 0;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   Event Information Display
+   ========================================================================== */
+
+.bil24-event-info {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.bil24-event-info h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #495057;
+    font-size: 18px;
+}
+
+.bil24-event-info p {
+    margin: 8px 0;
+    color: #6c757d;
+}
+
+.bil24-event-info strong {
+    color: #495057;
+}
+
+.bil24-event-details {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 25px;
+    margin: 25px 0;
+}
+
+.bil24-event-details h2,
+.bil24-event-details h3 {
+    color: #495057;
+    border-bottom: 2px solid #007cba;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+}
+
+/* ==========================================================================
+   Cart & Checkout Elements
+   ========================================================================== */
+
+.bil24-tickets-section {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.bil24-tickets-section h3 {
+    margin-top: 0;
+    color: #495057;
+    border-bottom: 2px solid #007cba;
+    padding-bottom: 8px;
+}
+
+.bil24-ticket-item {
+    background-color: white;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+    padding: 15px;
+    margin: 10px 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.bil24-ticket-item strong {
+    color: #495057;
+    font-size: 16px;
+}
+
+.bil24-ticket-item p {
+    margin: 5px 0;
+    color: #6c757d;
+}
+
+.bil24-ticket-item .button {
+    font-size: 12px;
+    padding: 5px 10px;
+}
+
+/* ==========================================================================
+   Product Page Enhancements
+   ========================================================================== */
+
+.bil24-product-fields {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.bil24-product-fields h4 {
+    margin-top: 0;
+    color: #495057;
+}
+
+.bil24-availability-notice {
+    margin: 15px 0;
+    padding: 12px 15px;
+    border-radius: 4px;
+    border-left: 4px solid #dc3545;
+}
+
+/* ==========================================================================
+   Customer Preferences Form
+   ========================================================================== */
+
+.bil24-preferences {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.bil24-preferences legend {
+    color: #495057;
+    font-weight: 600;
+    padding: 0 10px;
+    font-size: 16px;
+}
+
+.bil24-preferences .form-row {
+    margin-bottom: 15px;
+}
+
+.bil24-preferences textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-family: inherit;
+}
+
+.bil24-preferences .checkbox {
+    display: block;
+    margin-bottom: 8px;
+    padding-left: 0;
+}
+
+.bil24-preferences .checkbox input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.bil24-preferences small {
+    color: #6c757d;
+    font-size: 12px;
+    display: block;
+    margin-top: 3px;
+}
+
+/* ==========================================================================
+   Notifications
+   ========================================================================== */
+
+.bil24-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    max-width: 400px;
+    padding: 15px 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    animation: slideInRight 0.3s ease-out;
+}
+
+.bil24-notification-info {
+    background-color: #d1ecf1;
+    border: 1px solid #bee5eb;
+    color: #0c5460;
+}
+
+.bil24-notification-success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+
+.bil24-notification-warning {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    color: #856404;
+}
+
+.bil24-notification-error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+.bil24-notification .notification-close {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    margin-left: 15px;
+    padding: 0;
+    line-height: 1;
+    opacity: 0.7;
+}
+
+.bil24-notification .notification-close:hover {
+    opacity: 1;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* ==========================================================================
+   Loading States
+   ========================================================================== */
+
+.bil24-loading {
+    opacity: 0.6;
+    pointer-events: none;
+    position: relative;
+}
+
+.bil24-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #007cba;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.single_add_to_cart_button.loading {
+    position: relative;
+    color: transparent;
+}
+
+.single_add_to_cart_button.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top: 2px solid #ffffff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+/* ==========================================================================
+   Admin Styles
+   ========================================================================== */
+
+.bil24-sync-status {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.bil24-sync-status.status-synced {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.bil24-sync-status.status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.bil24-sync-status.status-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* ==========================================================================
+   Responsive Design
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .bil24-reservation-notice {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+    
+    #bil24-countdown {
+        margin: 10px 0;
+    }
+    
+    .bil24-notification {
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+    
+    .bil24-event-info,
+    .bil24-event-details,
+    .bil24-tickets-section {
+        padding: 15px;
+        margin: 15px 0;
+    }
+    
+    .bil24-preferences {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .bil24-ticket-item {
+        padding: 10px;
+    }
+    
+    .bil24-event-info h3,
+    .bil24-event-details h2,
+    .bil24-event-details h3 {
+        font-size: 16px;
+    }
+    
+    #bil24-countdown {
+        font-size: 16px;
+    }
+}
+
+/* ==========================================================================
+   Accessibility
+   ========================================================================== */
+
+.bil24-availability:focus,
+.bil24-notification:focus,
+#bil24-extend-reservation:focus {
+    outline: 2px solid #007cba;
+    outline-offset: 2px;
+}
+
+.bil24-availability[aria-live="polite"] {
+    /* Screen reader announcements for availability changes */
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .bil24-availability.available {
+        background-color: #000;
+        color: #0f0;
+        border-color: #0f0;
+    }
+    
+    .bil24-availability.unavailable {
+        background-color: #000;
+        color: #f00;
+        border-color: #f00;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    #bil24-countdown.warning,
+    #bil24-countdown.critical {
+        animation: none;
+    }
+    
+    .bil24-notification {
+        animation: none;
+    }
+    
+    .single_add_to_cart_button.loading::after {
+        animation: none;
+    }
+}
+
+/* ==========================================================================
+   Print Styles
+   ========================================================================== */
+
+@media print {
+    .bil24-reservation-notice,
+    .bil24-notification,
+    #bil24-extend-reservation {
+        display: none;
+    }
+    
+    .bil24-event-info,
+    .bil24-event-details,
+    .bil24-tickets-section {
+        background: white;
+        border: 1px solid #000;
+    }
+} 

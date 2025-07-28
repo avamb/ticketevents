@@ -41,6 +41,8 @@ final class Constants {
     public const HOOK_SYNC_CATALOG = 'bil24_sync_catalog';
     public const HOOK_SYNC_ORDERS = 'bil24_sync_orders';
     public const HOOK_SYNC_SESSIONS = 'bil24_sync_sessions';
+    public const HOOK_SYNC_PRODUCTS = 'bil24_sync_products';
+    public const HOOK_SYNC_CUSTOMERS = 'bil24_sync_customers';
     public const HOOK_CLEANUP_LOGS = 'bil24_cleanup_logs';
     
     // Cron intervals
