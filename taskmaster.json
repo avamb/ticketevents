@@ -1,0 +1,282 @@
+{
+    "project": {
+        "name": "Bil24 Connector",
+        "description": "WordPress plugin for Bil24 ticketing API integration",
+        "version": "1.0.0",
+        "type": "wordpress-plugin"
+    },
+    "tasks": {
+        "settings": {
+            "name": "Settings Page Implementation",
+            "description": "Implement the admin settings page for Bil24 configuration",
+            "status": "completed",
+            "priority": "high",
+            "assignee": "developer",
+            "estimated_hours": 4,
+            "dependencies": [],
+            "files": [
+                "includes\/admin\/SettingsPage.php"
+            ],
+            "acceptance_criteria": [
+                "Admin settings page accessible via WordPress admin",
+                "FID\/Token configuration fields",
+                "Settings validation and sanitization",
+                "Settings saved to WordPress options"
+            ],
+            "completed_at": "2025-07-28 18:03:15"
+        },
+        "cpt_registration": {
+            "name": "Custom Post Type Registration",
+            "description": "Register custom post types for events and sessions",
+            "status": "completed",
+            "priority": "high",
+            "assignee": "developer",
+            "estimated_hours": 3,
+            "dependencies": [],
+            "files": [
+                "includes\/Plugin.php"
+            ],
+            "acceptance_criteria": [
+                "Events custom post type registered",
+                "Sessions custom post type registered",
+                "Proper taxonomies and meta fields",
+                "Admin interface for managing CPTs"
+            ],
+            "completed_at": "2025-07-28 18:03:22"
+        },
+        "api_client": {
+            "name": "Bil24 API Client",
+            "description": "Create API client wrapper for Bil24 integration",
+            "status": "completed",
+            "priority": "high",
+            "assignee": "developer",
+            "estimated_hours": 6,
+            "dependencies": [
+                "settings"
+            ],
+            "files": [
+                "includes\/api\/Client.php",
+                "includes\/api\/Endpoints.php"
+            ],
+            "acceptance_criteria": [
+                "API client class with authentication",
+                "Event synchronization methods",
+                "Session synchronization methods",
+                "Order synchronization methods",
+                "Error handling and logging"
+            ],
+            "completed_at": "2025-07-28 18:03:30"
+        },
+        "event_sync": {
+            "name": "Event Synchronization",
+            "description": "Implement event synchronization between WordPress and Bil24",
+            "status": "completed",
+            "priority": "medium",
+            "assignee": "developer",
+            "estimated_hours": 8,
+            "dependencies": [
+                "api_client",
+                "cpt_registration"
+            ],
+            "files": [
+                "includes\/integrations\/EventSync.php"
+            ],
+            "acceptance_criteria": [
+                "Bidirectional event sync",
+                "Conflict resolution",
+                "Scheduled sync jobs",
+                "Manual sync triggers"
+            ],
+            "started_at": "2025-07-28 18:04:00",
+            "completed_at": "2025-07-28 18:05:29"
+        },
+        "session_sync": {
+            "name": "Session Synchronization",
+            "description": "Implement session synchronization between WordPress and Bil24",
+            "status": "completed",
+            "priority": "medium",
+            "assignee": "developer",
+            "estimated_hours": 6,
+            "dependencies": [
+                "api_client",
+                "cpt_registration"
+            ],
+            "files": [
+                "includes\/integrations\/SessionSync.php"
+            ],
+            "acceptance_criteria": [
+                "Session data sync",
+                "Capacity management",
+                "Pricing sync",
+                "Availability updates"
+            ],
+            "started_at": "2025-07-28 18:05:42",
+            "completed_at": "2025-07-28 18:07:38"
+        },
+        "order_sync": {
+            "name": "Order Synchronization",
+            "description": "Implement order synchronization with Bil24",
+            "status": "completed",
+            "priority": "medium",
+            "assignee": "developer",
+            "estimated_hours": 8,
+            "dependencies": [
+                "api_client"
+            ],
+            "files": [
+                "includes\/integrations\/OrderSync.php"
+            ],
+            "acceptance_criteria": [
+                "Order creation in Bil24",
+                "Order status updates",
+                "Payment integration",
+                "Ticket generation"
+            ],
+            "started_at": "2025-07-28 18:07:59",
+            "completed_at": "2025-07-28 18:10:18"
+        },
+        "frontend_display": {
+            "name": "Frontend Event Display",
+            "description": "Create frontend components for displaying events",
+            "status": "pending",
+            "priority": "low",
+            "assignee": "developer",
+            "estimated_hours": 5,
+            "dependencies": [
+                "cpt_registration"
+            ],
+            "files": [
+                "includes\/frontend\/EventDisplay.php",
+                "assets\/css\/events.css",
+                "assets\/js\/events.js"
+            ],
+            "acceptance_criteria": [
+                "Event listing shortcode",
+                "Event detail page",
+                "Responsive design",
+                "Booking interface"
+            ]
+        },
+        "woocommerce_integration": {
+            "name": "WooCommerce Integration",
+            "description": "Integrate with WooCommerce for ticket sales",
+            "status": "pending",
+            "priority": "medium",
+            "assignee": "developer",
+            "estimated_hours": 10,
+            "dependencies": [
+                "order_sync"
+            ],
+            "files": [
+                "includes\/integrations\/WooCommerce.php"
+            ],
+            "acceptance_criteria": [
+                "WooCommerce product type for tickets",
+                "Cart integration",
+                "Checkout process",
+                "Order fulfillment"
+            ]
+        },
+        "testing": {
+            "name": "Testing Suite",
+            "description": "Create comprehensive tests for the plugin",
+            "status": "pending",
+            "priority": "medium",
+            "assignee": "developer",
+            "estimated_hours": 6,
+            "dependencies": [
+                "api_client"
+            ],
+            "files": [
+                "tests\/",
+                "phpunit.xml"
+            ],
+            "acceptance_criteria": [
+                "Unit tests for core classes",
+                "Integration tests for API",
+                "WordPress plugin tests",
+                "Test coverage > 80%"
+            ]
+        },
+        "documentation": {
+            "name": "Documentation",
+            "description": "Create comprehensive documentation",
+            "status": "pending",
+            "priority": "low",
+            "assignee": "developer",
+            "estimated_hours": 4,
+            "dependencies": [],
+            "files": [
+                "docs\/",
+                "README.md"
+            ],
+            "acceptance_criteria": [
+                "Installation guide",
+                "Configuration guide",
+                "API documentation",
+                "Troubleshooting guide"
+            ]
+        }
+    },
+    "sprints": {
+        "sprint_1": {
+            "name": "Foundation",
+            "duration": "2 weeks",
+            "tasks": [
+                "settings",
+                "cpt_registration",
+                "api_client"
+            ],
+            "goal": "Establish basic plugin structure and API connectivity"
+        },
+        "sprint_2": {
+            "name": "Core Sync",
+            "duration": "3 weeks",
+            "tasks": [
+                "event_sync",
+                "session_sync",
+                "order_sync"
+            ],
+            "goal": "Implement core synchronization functionality"
+        },
+        "sprint_3": {
+            "name": "Integration & Polish",
+            "duration": "2 weeks",
+            "tasks": [
+                "woocommerce_integration",
+                "frontend_display"
+            ],
+            "goal": "Complete WooCommerce integration and frontend features"
+        },
+        "sprint_4": {
+            "name": "Quality Assurance",
+            "duration": "1 week",
+            "tasks": [
+                "testing",
+                "documentation"
+            ],
+            "goal": "Ensure quality and create documentation"
+        }
+    },
+    "team": {
+        "developer": {
+            "name": "Developer",
+            "role": "Full-stack developer",
+            "skills": [
+                "PHP",
+                "WordPress",
+                "API Integration",
+                "JavaScript"
+            ]
+        }
+    },
+    "metrics": {
+        "velocity": "15 hours per sprint",
+        "definition_of_done": [
+            "Code reviewed",
+            "Tests passing",
+            "Documentation updated",
+            "No critical bugs"
+        ]
+    }
+}

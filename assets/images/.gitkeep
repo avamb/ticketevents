@@ -1,0 +1,9 @@
+# Images Directory
+
+This directory contains image assets for the Bil24 Connector plugin.
+
+## Structure
+- `icons/` - Icon files (SVG, PNG)
+- `logos/` - Logo files
+- `admin/` - Admin interface images
+- `public/` - Frontend images 

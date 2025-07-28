@@ -1,0 +1,10 @@
+# JavaScript Directory
+
+This directory contains JavaScript files for the Bil24 Connector plugin.
+
+## Structure
+- `admin/` - Admin interface scripts
+- `public/` - Frontend scripts
+- `components/` - Reusable component scripts
+- `dist/` - Compiled/minified scripts
+- `src/` - Source files (before compilation) 

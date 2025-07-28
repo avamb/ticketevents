@@ -1,0 +1,9 @@
+# CSS Directory
+
+This directory contains stylesheet files for the Bil24 Connector plugin.
+
+## Structure
+- `admin/` - Admin interface styles
+- `public/` - Frontend styles
+- `components/` - Reusable component styles
+- `dist/` - Compiled/minified styles 

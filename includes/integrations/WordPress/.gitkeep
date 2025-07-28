@@ -1,0 +1,9 @@
+# WordPress Integration
+
+This directory contains WordPress core integration classes.
+
+## Structure
+- `PostTypeIntegration.php` - Custom post types
+- `TaxonomyIntegration.php` - Custom taxonomies
+- `MetaBoxIntegration.php` - Meta boxes
+- `HooksIntegration.php` - WordPress hooks and filters 

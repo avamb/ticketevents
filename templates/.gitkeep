@@ -1,0 +1,9 @@
+# Templates Directory
+
+This directory contains template files for the Bil24 Connector plugin.
+
+## Structure
+- `admin/` - Admin interface templates
+- `public/` - Frontend templates
+- `email/` - Email templates
+- `components/` - Reusable template components 

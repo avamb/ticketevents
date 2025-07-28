@@ -1,0 +1,15 @@
+# Languages Directory
+
+This directory contains internationalization files for the Bil24 Connector plugin.
+
+## Structure
+- `bil24.pot` - Template file for translations
+- `bil24-{locale}.po` - Translation files for specific locales
+- `bil24-{locale}.mo` - Compiled translation files
+
+## Usage
+Translation files should be named according to WordPress i18n standards:
+- `bil24-en_US.po/mo` - English (US)
+- `bil24-ru_RU.po/mo` - Russian 
+- `bil24-de_DE.po/mo` - German
+- etc. 

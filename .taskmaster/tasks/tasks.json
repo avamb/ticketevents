@@ -1,0 +1,454 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "WordPress Plugin Setup and Configuration",
+        "description": "Initialize the Bil24 Connector WordPress plugin with necessary configuration files, dependencies, and project structure.",
+        "details": "Create a new repository for the Bil24 Connector WordPress plugin. Set up the basic plugin structure following WordPress best practices:\n\n1. Create main plugin file with WordPress plugin header\n2. Set up plugin directory structure:\n   - includes/\n     - api/\n     - models/\n     - services/\n     - admin/\n     - public/\n     - integrations/\n   - assets/\n     - css/\n     - js/\n     - images/\n   - templates/\n   - languages/\n3. Implement plugin activation and deactivation hooks\n4. Set up autoloading with Composer\n5. Configure WordPress coding standards with PHPCS\n6. Set up PHPUnit for testing\n7. Create a CI/CD pipeline using GitHub Actions\n8. Create a comprehensive README.md with plugin overview\n9. Implement proper WordPress logging and debugging\n10. Set up internationalization (i18n) support",
+        "testStrategy": "Verify plugin structure is correctly set up. Ensure all configuration files are valid and tools are working properly. Test activation and deactivation hooks. Verify autoloading works correctly. Test internationalization functions.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Main Plugin File with WordPress Header",
+            "description": "Develop the main PHP file for the Bil24 Connector plugin, including the required WordPress plugin header metadata.",
+            "dependencies": [],
+            "details": "The main plugin file should be placed in the root of the plugin directory and include the standard WordPress plugin header (name, description, version, author, etc.). This file will serve as the entry point for the plugin.\n<info added on 2025-07-28T17:48:52.516Z>\nThe main plugin file has been successfully created with comprehensive WordPress plugin header information. The implementation includes:\n\n- Complete WordPress plugin header with all required and optional metadata\n- Global constants for paths, URLs, and version information\n- Minimum requirements verification for PHP 8.0+ and WordPress 6.2+\n- Proper internationalization setup with textdomain loading\n- Registration of activation, deactivation, and uninstall hooks\n- Plugin initialization through the 'plugins_loaded' hook\n\nThe Constants class has been enhanced with additional constants for API endpoints, caching configuration, logging settings, custom post types, meta keys, options, and user capabilities.\n\nThe main Plugin class now implements a robust singleton pattern with lifecycle methods (activate, deactivate, uninstall), custom post type registration, REST API endpoint initialization, cron event management, and system requirement verification.\n\nThe implementation follows WordPress Plugin Guidelines, supports proper internationalization, and establishes the foundation for REST API webhook handling and WooCommerce integration.\n</info added on 2025-07-28T17:48:52.516Z>",
+            "status": "done",
+            "testStrategy": "Verify the plugin appears in the WordPress admin plugins list and can be activated without errors."
+          },
+          {
+            "id": 2,
+            "title": "Establish Plugin Directory Structure",
+            "description": "Set up the recommended directory and file structure for the plugin, organizing code and assets according to WordPress best practices.",
+            "dependencies": [
+              "1.1"
+            ],
+            "details": "Create directories such as includes/api, includes/models, includes/services, includes/admin, includes/public, includes/integrations, assets/css, assets/js, assets/images, templates, and languages. Ensure each directory contains a placeholder file if empty.\n<info added on 2025-07-28T17:52:12.494Z>\nA complete modular directory structure has been created for the plugin:\n\n```\nincludes/\n├── admin/               # Administrative interface\n│   └── SettingsPage.php # Existing settings page\n├── api/                 # API-related classes\n├── integrations/        # Integrations\n│   ├── WooCommerce/     # WooCommerce integration\n│   └── WordPress/       # WordPress core integration\n├── models/              # Data models\n├── public/              # Frontend classes\n├── services/            # Service layer\n├── Constants.php        # Plugin constants\n├── Plugin.php           # Main class\n└── Utils.php            # Utilities\n\nassets/\n├── css/                 # Styles\n├── js/                  # JavaScript files\n└── images/              # Images\n\ntemplates/               # Templates\nlanguages/               # Translation files\n```\n\nEach directory contains documented placeholder files (.gitkeep) with descriptions of their purpose and planned file structure. The architecture follows modular design principles with separate components for service layer, integrations, assets, templates, and internationalization support. The structure adheres to WordPress Plugin Guidelines, implements PSR-4 compatible organization, and provides proper asset organization with internationalization support.\n</info added on 2025-07-28T17:52:12.494Z>",
+            "status": "done",
+            "testStrategy": "Check that all required directories exist and are correctly named. Confirm that files are organized as specified."
+          },
+          {
+            "id": 3,
+            "title": "Implement Plugin Activation and Deactivation Hooks",
+            "description": "Add activation and deactivation hooks in the main plugin file to handle setup and cleanup tasks.",
+            "dependencies": [
+              "1.1",
+              "1.2"
+            ],
+            "details": "Use register_activation_hook and register_deactivation_hook to define functions that run on plugin activation and deactivation. These may include tasks such as creating custom database tables or clearing scheduled events.",
+            "status": "done",
+            "testStrategy": "Activate and deactivate the plugin in WordPress and verify that the corresponding functions execute as intended."
+          },
+          {
+            "id": 4,
+            "title": "Set Up Composer Autoloading",
+            "description": "Configure Composer for autoloading PHP classes within the plugin, following PSR-4 standards.",
+            "dependencies": [
+              "1.2"
+            ],
+            "details": "Create a composer.json file with autoload settings, run composer install, and ensure all classes in the includes directory are autoloaded. Document the autoloading approach in the README.\n<info added on 2025-07-28T17:59:00.632Z>\nUpdated composer.json with full configuration including dev dependencies (PHPUnit, PHPCS, WordPress Coding Standards, PHPStan), PSR-4 autoloading for main classes and tests, utility scripts, project metadata, and autoloader optimization.\n\nFixed autoloading configuration by correcting namespace mapping in vendor files and resolving double slash issues in the Bil24\\\\ namespace.\n\nCreated a test Event model class with getter/setter methods, support for arrays and WordPress Post objects, data validation, fallback functions, and WordPress compatibility.\n\nSuccessfully tested PSR-4 autoloading with 3/3 classes loading correctly (Bil24\\\\Constants, Bil24\\\\Utils, and Bil24\\\\Models\\\\Event). All classes now load automatically without manual require/include statements, making the Composer autoloader ready for development and testing.\n</info added on 2025-07-28T17:59:00.632Z>",
+            "status": "done",
+            "testStrategy": "Add a test class and verify it is autoloaded without manual require/include statements."
+          },
+          {
+            "id": 5,
+            "title": "Configure WordPress Coding Standards with PHPCS",
+            "description": "Integrate PHP_CodeSniffer (PHPCS) with WordPress coding standards into the development workflow.",
+            "dependencies": [
+              "1.2"
+            ],
+            "details": "Install PHPCS and the WordPress coding standards ruleset. Add configuration files (phpcs.xml or phpcs.xml.dist) to the repository and document usage for contributors.",
+            "status": "pending",
+            "testStrategy": "Run PHPCS on the codebase and confirm that violations are reported according to the WordPress standards."
+          },
+          {
+            "id": 6,
+            "title": "Set Up PHPUnit for Testing",
+            "description": "Integrate PHPUnit for automated unit testing of plugin code.",
+            "dependencies": [
+              "1.2",
+              "1.4"
+            ],
+            "details": "Install PHPUnit via Composer, create a tests directory, and add sample test cases. Configure the test suite to work with the plugin's autoloading and WordPress test environment.",
+            "status": "pending",
+            "testStrategy": "Run PHPUnit and verify that tests execute and results are reported."
+          },
+          {
+            "id": 7,
+            "title": "Create CI/CD Pipeline with GitHub Actions",
+            "description": "Set up a GitHub Actions workflow to automate linting, testing, and build processes for the plugin.",
+            "dependencies": [
+              "1.5",
+              "1.6"
+            ],
+            "details": "Configure workflows to run PHPCS, PHPUnit, and other checks on pull requests and pushes. Ensure the pipeline provides feedback on code quality and test results.",
+            "status": "pending",
+            "testStrategy": "Push a commit and verify that the CI pipeline runs all configured jobs and reports status."
+          },
+          {
+            "id": 8,
+            "title": "Write Comprehensive README.md and Add Internationalization Support",
+            "description": "Create a detailed README.md with plugin overview, setup instructions, and usage guidelines. Set up internationalization (i18n) support for all user-facing strings.",
+            "dependencies": [
+              "1.1",
+              "1.2",
+              "1.3"
+            ],
+            "details": "Document plugin features, installation steps, and contribution guidelines in README.md. Ensure all text strings are wrapped in translation functions and add a languages directory for translation files.",
+            "status": "pending",
+            "testStrategy": "Review README.md for completeness and clarity. Use WordPress tools to verify that translation functions are correctly implemented and .pot files can be generated."
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Define Core Data Models",
+        "description": "Create PHP classes for all data models required by the Bil24 Connector WordPress plugin.",
+        "details": "Define the following data models with PHP classes:\n\n1. `Bil24_Credentials` - Class for API authentication\n   - api_key: string\n   - secret_key: string\n   - environment: 'production' | 'sandbox'\n\n2. `Bil24_Config` - Configuration options\n   - base_url: string\n   - timeout: int\n   - retry_attempts: int\n\n3. `Bil24_Response` - Standard API response format\n   - success: bool\n   - data: mixed\n   - error: string\n\n4. `Bil24_Event` - Event data structure\n   - id: string\n   - type: string\n   - timestamp: DateTime\n   - payload: array\n\nImplement proper validation for these models using WordPress sanitization and validation functions. Create custom database tables if needed using WordPress dbDelta API. Implement data persistence methods using WordPress options API or custom tables.",
+        "testStrategy": "Write unit tests for each model to verify proper validation. Test edge cases like missing required fields, invalid data types, and boundary values. Ensure models correctly serialize/deserialize to/from JSON. Test data persistence and retrieval from WordPress database.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Implement HTTP Client Service",
+        "description": "Create a robust HTTP client service to handle all API communication with the Bil24 platform.",
+        "details": "Implement an HTTP client service using WordPress HTTP API with the following features:\n\n1. Create a base client class with configurable options:\n   - Base URL configuration\n   - Default headers\n   - Request/response filters\n   - Timeout settings\n   - Retry logic with exponential backoff\n\n2. Implement authentication handling:\n   - Add API key and secret to request headers\n   - Support for different authentication methods if needed\n\n3. Add error handling:\n   - Standardized error responses\n   - Network error handling\n   - Rate limiting detection and handling\n\n4. Implement request/response logging for debugging\n\n5. Add support for request cancellation\n\nUse WordPress HTTP API functions like wp_remote_get(), wp_remote_post(), etc. Implement proper error handling using WP_Error.",
+        "testStrategy": "Create unit tests with mocked HTTP responses using WordPress testing framework. Test successful requests, error handling, retry logic, and timeout behavior. Verify authentication headers are correctly applied. Test rate limiting and backoff strategies.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Implement Authentication Service",
+        "description": "Create a service to handle authentication with the Bil24 API, including token management and refresh logic.",
+        "details": "Implement an authentication service with the following features:\n\n1. Create methods for initializing with API credentials\n2. Implement token acquisition from Bil24 API\n3. Add token caching using WordPress transients API\n4. Implement token refresh logic before expiration\n5. Add token validation methods\n6. Create secure storage for credentials using WordPress options API\n\nUse the HTTP client from Task 3 for API communication. Implement proper error handling for authentication failures. Use WordPress transients API for token caching with TTL support.\n\nEnsure all sensitive information is properly handled and not exposed in logs or error messages. Use WordPress nonces for CSRF protection in admin forms.",
+        "testStrategy": "Write unit tests for token acquisition, validation, and refresh logic. Mock API responses for different scenarios including successful authentication, invalid credentials, and expired tokens. Test token caching behavior and expiration handling. Verify secure handling of credentials in WordPress database.",
+        "priority": "high",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Implement Core Bil24 API Client",
+        "description": "Create the main Bil24 client class that will serve as the primary interface for the connector.",
+        "details": "Implement the core Bil24_Client class with the following features:\n\n1. Constructor accepting Bil24_Credentials and optional Bil24_Config\n2. Integration with the authentication service from Task 4\n3. Methods for all core API operations:\n   - initialize(): bool - Set up the client\n   - get_status(): Bil24_Response - Check API status\n   - ping(): bool - Simple connectivity test\n\n4. Implement proper error handling and logging\n5. Implement connection pooling for performance optimization\n6. Implement rate limiting protection\n\nUse the service container pattern for dependency injection. Ensure the client is properly documented with PHPDoc comments. Implement a singleton pattern option for applications that need a global client instance.",
+        "testStrategy": "Create comprehensive unit tests for the client class. Test initialization with different configurations. Mock API responses for all core methods. Test error handling and recovery. Verify rate limiting protection works correctly. Test integration with WordPress hooks and filters.",
+        "priority": "high",
+        "dependencies": [
+          3,
+          4
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design Bil24_Client Class Structure and Dependency Injection",
+            "description": "Define the Bil24_Client class structure, ensuring the constructor accepts Bil24_Credentials and optional Bil24_Config. Integrate the service container pattern for dependency injection and plan for singleton pattern support.",
+            "dependencies": [],
+            "details": "Establish the class skeleton, constructor signature, and dependency injection mechanism. Document the class and constructor using PHPDoc. Prepare for singleton instantiation as an option for global usage.",
+            "status": "pending",
+            "testStrategy": "Verify instantiation with various credential and config combinations. Test singleton behavior and dependency injection with mock services."
+          },
+          {
+            "id": 2,
+            "title": "Integrate Authentication Service",
+            "description": "Connect the Bil24_Client to the authentication service implemented in Task 4, ensuring secure token management and refresh logic.",
+            "dependencies": [
+              "5.1"
+            ],
+            "details": "Utilize the authentication service for acquiring and refreshing tokens. Ensure the client can securely access and validate tokens as needed for API requests.",
+            "status": "pending",
+            "testStrategy": "Mock authentication service responses to test token acquisition, refresh, and error handling within the client."
+          },
+          {
+            "id": 3,
+            "title": "Implement Core API Operation Methods",
+            "description": "Develop the initialize(), get_status(), and ping() methods in Bil24_Client to perform essential API operations.",
+            "dependencies": [
+              "5.2"
+            ],
+            "details": "Implement initialize() for client setup, get_status() to check API status and return a Bil24_Response, and ping() for connectivity testing. Ensure all methods use proper authentication and handle responses appropriately.",
+            "status": "pending",
+            "testStrategy": "Mock API endpoints and validate method outputs, including correct handling of successful and failed responses."
+          },
+          {
+            "id": 4,
+            "title": "Implement Error Handling and Logging",
+            "description": "Add robust error handling and logging throughout Bil24_Client, ensuring all exceptions and failures are properly managed and recorded.",
+            "dependencies": [
+              "5.3"
+            ],
+            "details": "Integrate a logging library or use WordPress logging facilities. Ensure all API calls, authentication steps, and internal operations log errors and important events. Document error handling strategies in PHPDoc.",
+            "status": "pending",
+            "testStrategy": "Simulate error scenarios and verify that errors are logged and exceptions are handled gracefully without leaking sensitive information."
+          },
+          {
+            "id": 5,
+            "title": "Implement Connection Pooling",
+            "description": "Optimize Bil24_Client performance by implementing connection pooling for HTTP requests.",
+            "dependencies": [
+              "5.4"
+            ],
+            "details": "Leverage an HTTP client that supports connection pooling (e.g., Guzzle). Configure the client to reuse connections where possible, reducing latency and resource usage.",
+            "status": "pending",
+            "testStrategy": "Benchmark API calls with and without pooling. Monitor connection reuse and measure performance improvements under load."
+          },
+          {
+            "id": 6,
+            "title": "Implement Rate Limiting Protection",
+            "description": "Add rate limiting logic to Bil24_Client to prevent exceeding Bil24 API quotas and ensure compliance with platform restrictions.",
+            "dependencies": [
+              "5.5"
+            ],
+            "details": "Track outgoing requests and enforce configurable rate limits. Implement backoff and retry strategies when limits are approached or exceeded. Document rate limiting logic in PHPDoc.",
+            "status": "pending",
+            "testStrategy": "Simulate high request volumes and verify that rate limiting is enforced, with appropriate logging and error handling for throttled requests."
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Implement Event Subscription API",
+        "description": "Create methods to manage event subscriptions with the Bil24 platform.",
+        "details": "Extend the Bil24_Client with event subscription capabilities:\n\n1. Implement the following methods:\n   - subscribe_to_event(string $event_type, string $callback_url): Bil24_Response\n   - unsubscribe_from_event(string $event_type, string $subscription_id): Bil24_Response\n   - list_subscriptions(): Bil24_Response\n   - get_subscription_details(string $subscription_id): Bil24_Response\n\n2. Create subscription management utilities:\n   - Subscription validation\n   - Automatic resubscription on failure\n   - Subscription status monitoring\n\n3. Implement webhook URL validation and testing\n\nUse proper PHPDoc documentation for all methods and responses. Ensure all methods have appropriate error handling and logging. Integrate with WordPress REST API for webhook endpoints.",
+        "testStrategy": "Write unit tests for all subscription methods. Mock API responses for successful and failed subscription attempts. Test subscription validation logic. Verify error handling for invalid event types or callback URLs. Test automatic resubscription functionality. Test integration with WordPress REST API.",
+        "priority": "medium",
+        "dependencies": [
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Implement WordPress REST API Webhook Handler",
+        "description": "Create a WordPress REST API endpoint to process incoming events from the Bil24 platform.",
+        "details": "Implement a WordPress REST API webhook handler with the following features:\n\n1. Register a custom REST API endpoint for handling incoming webhooks:\n   ```php\n   register_rest_route('bil24/v1', '/webhook', [\n     'methods' => 'POST',\n     'callback' => [$this, 'handle_webhook'],\n     'permission_callback' => [$this, 'verify_webhook_request']\n   ]);\n   ```\n\n2. Implement webhook signature verification for security\n3. Add event type validation and routing\n4. Create an event processing queue using WordPress cron for reliable processing\n5. Implement retry logic for failed event processing\n6. Add monitoring and metrics collection\n\nEnsure the handler is properly integrated with WordPress hooks and filters. Implement proper error handling and logging for all webhook processing steps. Use WordPress nonces and capabilities for security.",
+        "testStrategy": "Create unit tests for the webhook handler. Test signature verification with valid and invalid signatures. Test event routing logic. Verify queue processing and retry behavior. Create integration tests with mock webhook payloads. Test performance under load with concurrent webhook requests.",
+        "priority": "medium",
+        "dependencies": [
+          2,
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Implement Event Processing System",
+        "description": "Create a system to process and handle events received from Bil24 webhooks.",
+        "details": "Implement an event processing system with the following components:\n\n1. Create an Bil24_Event_Processor class with methods:\n   - register_handler(string $event_type, callable $handler): void\n   - process_event(Bil24_Event $event): bool\n   - get_registered_handlers(): array\n\n2. Implement the event handler interface:\n   ```php\n   interface Bil24_Event_Handler {\n     public function handle(Bil24_Event $event): bool;\n     public function can_handle(Bil24_Event $event): bool;\n   }\n   ```\n\n3. Create default handlers for common event types\n4. Implement event validation and sanitization\n5. Add error handling and failed events logging\n6. Implement event correlation and tracking\n\nUse WordPress actions and filters for flexible event handling. Ensure handlers are properly integrated with WordPress hooks. Implement proper logging for all event processing steps.",
+        "testStrategy": "Write unit tests for the Bil24_Event_Processor class. Test handler registration and event routing. Verify error handling for failed event processing. Test concurrent event processing. Create integration tests with the webhook handler from Task 7. Test performance with high event volumes.",
+        "priority": "medium",
+        "dependencies": [
+          2,
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Implement Data Transformation Utilities",
+        "description": "Create utilities to transform data between Bil24 format and WordPress/WooCommerce formats.",
+        "details": "Implement data transformation utilities with the following features:\n\n1. Create a Bil24_Data_Transformer class with methods:\n   - transform_to_wordpress(array $bil24_data, array $schema): array\n   - transform_to_bil24(array $wordpress_data, array $schema): array\n   - validate_schema(array $schema): bool\n\n2. Implement the transformation schema structure for defining mappings\n3. Create common transformation templates for standard Bil24 data types\n4. Add support for custom transformation functions\n5. Implement validation for transformed data\n\nUse WordPress sanitization and validation functions for data handling. Ensure all transformations are properly documented. Implement proper error handling for transformation failures. Create specific transformers for WooCommerce products, orders, and customers.",
+        "testStrategy": "Write unit tests for all transformation utilities. Test transformations with various data structures. Verify validation logic for schemas and transformed data. Test edge cases like missing fields, null values, and nested structures. Test integration with WordPress and WooCommerce data models.",
+        "priority": "medium",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Implement WordPress Caching Layer",
+        "description": "Create a caching system to improve performance and reduce API calls to the Bil24 platform.",
+        "details": "Implement a caching layer with the following features:\n\n1. Create a Bil24_Cache_Service class with methods:\n   - get(string $key): mixed\n   - set(string $key, mixed $value, int $ttl = 0): bool\n   - delete(string $key): bool\n   - clear(): bool\n\n2. Implement adapters for different cache backends:\n   - WordPress Transients API\n   - Object Cache API (when available)\n   - File system cache for development environments\n\n3. Add cache invalidation strategies:\n   - TTL-based expiration\n   - Manual invalidation\n   - Event-based invalidation\n\n4. Implement cache compression for large objects\n5. Add cache statistics and monitoring\n\nEnsure the cache implementation is compatible with WordPress multisite. Implement proper error handling for cache failures.",
+        "testStrategy": "Write unit tests for the Bil24_Cache_Service class. Test all cache operations with different backends. Verify TTL expiration behavior. Test concurrent cache access. Measure cache hit/miss rates. Test cache performance under load. Verify cache invalidation strategies work correctly.",
+        "priority": "medium",
+        "dependencies": [
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Implement Retry and Circuit Breaker Patterns",
+        "description": "Create utilities to handle transient failures and prevent cascading failures when communicating with the Bil24 API.",
+        "details": "Implement retry and circuit breaker patterns with the following features:\n\n1. Create a Bil24_Retry_Service with configurable options:\n   - Maximum retry attempts\n   - Backoff strategy (linear, exponential, jitter)\n   - Retry conditions based on error types\n\n2. Implement a Bil24_Circuit_Breaker class with states:\n   - Closed (normal operation)\n   - Open (failing, not allowing requests)\n   - Half-open (testing if system has recovered)\n\n3. Create wrapper methods for easy application to API methods:\n   ```php\n   public function with_retry(callable $function, array $options = []): mixed\n   public function with_circuit_breaker(callable $function, array $options = []): mixed\n   ```\n\n4. Add monitoring and metrics for retry and circuit breaker events\n\nIntegrate with WordPress options API for storing circuit breaker state. Ensure all utilities are properly documented with PHPDoc.",
+        "testStrategy": "Write unit tests for retry and circuit breaker utilities. Test different backoff strategies. Verify circuit breaker state transitions. Test integration with the HTTP client from Task 3. Simulate various failure scenarios including network errors, timeouts, and server errors. Verify metrics collection for retry and circuit breaker events.",
+        "priority": "medium",
+        "dependencies": [
+          3,
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Implement WordPress Logging and Monitoring",
+        "description": "Create a comprehensive logging and monitoring system for the Bil24 Connector WordPress plugin.",
+        "details": "Implement logging and monitoring with the following features:\n\n1. Create a Bil24_Logging_Service with different log levels:\n   - debug, info, warn, error, fatal\n\n2. Implement log storage options:\n   - WordPress database logging\n   - File logging with rotation\n   - Integration with WordPress error log\n\n3. Add structured logging with context:\n   - Request IDs for tracing\n   - User/client information\n   - Performance metrics\n\n4. Implement a Bil24_Metrics_Service for collecting operational metrics:\n   - API call counts and latencies\n   - Error rates and types\n   - Cache hit/miss rates\n   - Event processing statistics\n\n5. Create admin dashboard widgets for monitoring\n\nUse WordPress debug.log for development logging. Ensure all sensitive information is properly redacted from logs.",
+        "testStrategy": "Write unit tests for logging and metrics services. Verify log levels work correctly. Test log redaction for sensitive information. Verify metrics collection accuracy. Test performance impact of logging and monitoring. Create integration tests with the main Bil24_Client to verify proper logging of API operations.",
+        "priority": "medium",
+        "dependencies": [
+          1,
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "Implement Rate Limiting and Throttling",
+        "description": "Create a system to manage API rate limits and prevent exceeding Bil24 platform quotas.",
+        "details": "Implement rate limiting and throttling with the following features:\n\n1. Create a Bil24_Rate_Limiter class with methods:\n   - acquire(string $key, int $cost = 1): bool\n   - get_remaining_tokens(string $key): int\n   - reset_limiter(string $key): bool\n\n2. Implement different rate limiting algorithms:\n   - Token bucket algorithm\n   - Leaky bucket algorithm\n   - Fixed window counter\n   - Sliding window counter\n\n3. Add distributed rate limiting using WordPress transients\n4. Implement adaptive throttling based on API response headers\n5. Create rate limit monitoring and alerting in admin dashboard\n\nUse WordPress transients API or object cache for storing rate limit data. Ensure rate limiting is properly integrated with the HTTP client from Task 3.",
+        "testStrategy": "Write unit tests for rate limiting algorithms. Test concurrent requests against rate limits. Verify distributed rate limiting works correctly. Test integration with the HTTP client. Simulate API responses with rate limit headers to test adaptive throttling. Measure performance impact of rate limiting.",
+        "priority": "medium",
+        "dependencies": [
+          3,
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 14,
+        "title": "Create WordPress Admin Interface",
+        "description": "Develop a comprehensive admin interface for the Bil24 Connector WordPress plugin.",
+        "details": "Create a WordPress admin interface with the following components:\n\n1. Main Settings Page:\n   - API credentials configuration\n   - General plugin settings\n   - Connection status indicator\n   - Test connection button\n\n2. Event Subscription Management:\n   - List of active subscriptions\n   - Add/remove subscription interface\n   - Subscription status monitoring\n\n3. Logs and Monitoring:\n   - Log viewer with filtering\n   - Performance metrics dashboard\n   - Error reporting and troubleshooting\n\n4. Data Synchronization:\n   - Manual sync triggers\n   - Sync history and status\n   - Conflict resolution interface\n\nUse WordPress Settings API for configuration pages. Implement proper nonce verification and capability checks for security. Create custom WordPress admin notices for important alerts. Use WordPress dashicons and standard UI components for consistency.",
+        "testStrategy": "Test admin interface in different WordPress versions. Verify all forms submit correctly and validate input. Test with different user roles and permissions. Ensure settings are properly saved and retrieved. Test responsive design on different screen sizes. Verify all AJAX functionality works correctly.",
+        "priority": "medium",
+        "dependencies": [
+          1,
+          5,
+          6,
+          12
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design Main Settings Page Structure",
+            "description": "Create the layout and navigation for the main settings page, including sections for API credentials, general plugin settings, connection status, and a test connection button.",
+            "dependencies": [],
+            "details": "Use the WordPress Settings API to register settings sections and fields. Ensure the UI follows WordPress admin design conventions and uses standard components such as dashicons for visual cues.",
+            "status": "pending",
+            "testStrategy": "Verify that all settings fields render correctly, are grouped logically, and that navigation between sections is intuitive. Test on multiple WordPress versions for compatibility."
+          },
+          {
+            "id": 2,
+            "title": "Implement API Credentials and General Settings Management",
+            "description": "Develop secure forms for entering and saving API credentials and general plugin settings, ensuring proper validation and storage.",
+            "dependencies": [
+              "14.1"
+            ],
+            "details": "Leverage the Settings API for data handling. Implement nonce verification and capability checks to restrict access. Display admin notices for success or error states.",
+            "status": "pending",
+            "testStrategy": "Test form submission with valid and invalid data, confirm settings are saved and retrieved correctly, and verify that only authorized users can access these forms."
+          },
+          {
+            "id": 3,
+            "title": "Develop Connection Status Indicator and Test Connection Feature",
+            "description": "Add a real-time connection status indicator and a button to test the API connection, displaying results to the admin.",
+            "dependencies": [
+              "14.2"
+            ],
+            "details": "Use AJAX to check API connectivity without reloading the page. Show clear success or error messages using custom admin notices.",
+            "status": "pending",
+            "testStrategy": "Simulate various API responses (success, failure, timeout) and verify that the indicator and messages update accordingly."
+          },
+          {
+            "id": 4,
+            "title": "Build Event Subscription Management Interface",
+            "description": "Create an interface to list, add, and remove event subscriptions, and monitor their status.",
+            "dependencies": [
+              "14.1"
+            ],
+            "details": "Display active subscriptions in a table with status indicators. Provide forms for adding/removing subscriptions, and use AJAX for real-time updates. Ensure capability checks and nonce verification.",
+            "status": "pending",
+            "testStrategy": "Test adding, removing, and listing subscriptions with valid and invalid data. Verify UI updates and access control for different user roles."
+          },
+          {
+            "id": 5,
+            "title": "Implement Logs and Monitoring Dashboard",
+            "description": "Develop a dashboard for viewing logs, filtering entries, displaying performance metrics, and reporting errors.",
+            "dependencies": [
+              "14.1"
+            ],
+            "details": "Use WordPress UI components for tables and filters. Integrate error and performance data, and provide troubleshooting links or actions. Ensure logs are securely stored and displayed.",
+            "status": "pending",
+            "testStrategy": "Test log filtering, error reporting, and metrics display with various data sets. Confirm that sensitive information is not exposed and that only authorized users can access logs."
+          },
+          {
+            "id": 6,
+            "title": "Create Data Synchronization Controls",
+            "description": "Add manual sync triggers, display sync history and status, and provide a conflict resolution interface.",
+            "dependencies": [
+              "14.1"
+            ],
+            "details": "Implement buttons for manual sync using AJAX. Show sync history in a sortable table, and provide UI for resolving data conflicts. Use admin notices for sync results.",
+            "status": "pending",
+            "testStrategy": "Test manual sync actions, verify history logging, and simulate conflict scenarios to ensure the resolution interface works as intended."
+          },
+          {
+            "id": 7,
+            "title": "Enforce Security and Consistency Standards",
+            "description": "Integrate nonce verification, capability checks, and use of standard WordPress UI components across all admin pages.",
+            "dependencies": [
+              "14.2",
+              "14.4",
+              "14.5",
+              "14.6"
+            ],
+            "details": "Review all forms and actions for proper nonce and permission handling. Ensure all UI elements use dashicons and adhere to WordPress admin design guidelines. Implement custom admin notices for important alerts.",
+            "status": "pending",
+            "testStrategy": "Audit code for security best practices, test with users of different roles, and verify that all admin notices and UI components render consistently."
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "title": "Implement WooCommerce Integration",
+        "description": "Create integration between Bil24 Connector and WooCommerce for product, order, and customer synchronization.",
+        "details": "Implement WooCommerce integration with the following features:\n\n1. Product Synchronization:\n   - Import Bil24 products to WooCommerce\n   - Export WooCommerce products to Bil24\n   - Sync product inventory and prices\n   - Handle product variations and attributes\n\n2. Order Management:\n   - Send WooCommerce orders to Bil24\n   - Update order status from Bil24\n   - Sync order fulfillment and shipping\n   - Handle refunds and cancellations\n\n3. Customer Data:\n   - Sync customer profiles between systems\n   - Manage customer groups and segments\n   - Handle privacy and data protection\n\n4. Settings and Configuration:\n   - Field mapping configuration\n   - Sync schedule settings\n   - Conflict resolution rules\n\nUse WooCommerce hooks and filters for deep integration. Implement background processing for large data synchronization using WordPress cron. Create custom WooCommerce admin tabs for Bil24-specific settings.",
+        "testStrategy": "Test integration with different WooCommerce versions. Verify product, order, and customer synchronization in both directions. Test with various product types including simple, variable, and grouped products. Verify order status updates work correctly. Test performance with large product catalogs and order volumes. Verify error handling and recovery during synchronization.",
+        "priority": "high",
+        "dependencies": [
+          5,
+          8,
+          9,
+          10
+        ],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-07-28T17:40:45.790Z",
+      "updated": "2025-07-28T17:59:05.162Z",
+      "description": "Tasks for master context"
+    }
+  }
+}
