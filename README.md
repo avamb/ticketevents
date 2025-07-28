@@ -43,9 +43,15 @@ The Bil24 Connector enables real-time synchronization of events, sessions, order
 
 ## 🔧 Installation
 
+### ⚡ Quick Start (5 minutes)
+**Для быстрой настройки плагина смотрите:** [QUICK-START.md](./QUICK-START.md)
+
+### 📖 Detailed Installation Guide
+**Полная инструкция по установке и настройке:** [INSTALLATION-GUIDE.md](./INSTALLATION-GUIDE.md)
+
 ### Option 1: WordPress Admin (Recommended)
 
-1. Download the latest release from [GitHub Releases](https://github.com/yourname/bil24-connector/releases)
+1. Download the latest release from [GitHub Releases](https://github.com/avamb/ticketevents/releases)
 2. Upload the plugin via **Plugins → Add New → Upload Plugin**
 3. Activate the plugin
 4. Configure your Bil24 API credentials
@@ -57,7 +63,7 @@ The Bil24 Connector enables real-time synchronization of events, sessions, order
 cd wp-content/plugins/
 
 # Clone the repository
-git clone https://github.com/yourname/bil24-connector.git
+git clone https://github.com/avamb/ticketevents.git bil24-connector
 
 # Install dependencies
 cd bil24-connector
