@@ -40,21 +40,23 @@
     },
     "scripts": {
         "test": "phpunit",
-        "phpcs": "phpcs --standard=WordPress includes/ bil24-connector.php",
-        "phpcbf": "phpcbf --standard=WordPress includes/ bil24-connector.php",
+        "phpcs": "php tools/phpcs.phar --standard=phpcs.xml.dist",
+        "phpcbf": "php tools/phpcbf.phar --standard=phpcs.xml.dist",
         "phpstan": "phpstan analyse includes/ --level=5",
         "check": [
             "@phpcs",
-            "@phpstan",
             "@test"
-        ]
+        ],
+        "fix": "@phpcbf"
     },
     "config": {
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true
         },
         "sort-packages": true,
-        "optimize-autoloader": true
+        "optimize-autoloader": true,
+        "disable-tls": true,
+        "secure-http": false
     },
     "minimum-stability": "stable",
     "prefer-stable": true

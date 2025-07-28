@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<ruleset name="Bil24 Connector WordPress Plugin">
+    <description>PHPCS ruleset for Bil24 Connector WordPress plugin</description>
+
+    <!-- Проверяемые файлы и папки -->
+    <file>bil24-connector.php</file>
+    <file>includes/</file>
+    <file>taskmaster.php</file>
+    <file>taskmaster-dashboard.php</file>
+
+    <!-- Исключаемые файлы и папки -->
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/node_modules/*</exclude-pattern>
+    <exclude-pattern>*/tests/*</exclude-pattern>
+    <exclude-pattern>*/assets/*</exclude-pattern>
+    <exclude-pattern>*/languages/*</exclude-pattern>
+    <exclude-pattern>*/templates/*</exclude-pattern>
+    <exclude-pattern>*/tools/*</exclude-pattern>
+
+    <!-- Использовать базовые стандарты PSR -->
+    <rule ref="PSR2"/>
+    <rule ref="PSR12"/>
+    
+    <!-- Базовые правила для PHP -->
+    <rule ref="Generic.PHP.DisallowShortOpenTag"/>
+    <rule ref="Generic.PHP.ForbiddenFunctions"/>
+    <rule ref="Generic.PHP.NoSilencedErrors"/>
+    
+    <!-- Правила безопасности -->
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="120"/>
+            <property name="absoluteLineLimit" value="200"/>
+        </properties>
+    </rule>
+    
+    <!-- Правила для массивов -->
+    <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
+    
+    <!-- Правила для классов -->
+    <rule ref="Generic.Classes.DuplicateClassName"/>
+    
+    <!-- Показать прогресс и использовать цвета -->
+    <arg value="ps"/>
+    <arg name="colors"/>
+    
+    <!-- Параллельная обработка для ускорения -->
+    <arg name="parallel" value="8"/>
+    
+    <!-- Расширения файлов для проверки -->
+    <arg name="extensions" value="php"/>
+</ruleset> 
