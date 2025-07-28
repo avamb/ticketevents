@@ -39,7 +39,7 @@ class Integration {
     /**
      * Constructor
      */
-    public function __construct( Endpoints $api = null ) {
+    public function __construct( ?Endpoints $api = null ) {
         $this->api = $api ?? new Endpoints();
         $this->settings = get_option( 'bil24_woocommerce_settings', [] );
         

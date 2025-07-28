@@ -37,7 +37,7 @@ class OrderSync {
     /**
      * Constructor
      */
-    public function __construct( Endpoints $api = null ) {
+    public function __construct( ?Endpoints $api = null ) {
         $this->api = $api ?? new Endpoints();
         $this->register_hooks();
     }
@@ -649,7 +649,7 @@ class OrderSync {
     /**
      * Sync order from Bil24 data
      */
-    private function sync_order_from_bil24_data( array $bil24_order, int $existing_order_id = null ): array {
+    private function sync_order_from_bil24_data( array $bil24_order, ?int $existing_order_id = null ): array {
         $bil24_order_id = $bil24_order['id'] ?? null;
         
         if ( ! $bil24_order_id ) {

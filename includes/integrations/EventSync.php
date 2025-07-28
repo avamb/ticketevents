@@ -33,7 +33,7 @@ class EventSync {
     /**
      * Constructor
      */
-    public function __construct( Endpoints $api = null ) {
+    public function __construct( ?Endpoints $api = null ) {
         $this->api = $api ?? new Endpoints();
         $this->register_hooks();
     }
@@ -358,7 +358,7 @@ class EventSync {
     /**
      * Sync event from Bil24 data
      */
-    private function sync_event_from_bil24_data( array $bil24_event, int $existing_post_id = null ): array {
+    private function sync_event_from_bil24_data( array $bil24_event, ?int $existing_post_id = null ): array {
         $bil24_id = $bil24_event['id'] ?? null;
         
         if ( ! $bil24_id ) {

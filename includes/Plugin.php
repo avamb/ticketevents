@@ -179,32 +179,24 @@ final class Plugin {
                 'use_featured_image' => __( 'Use as event image', 'bil24' ),
             ],
             'description' => __( 'Events imported from Bil24 platform', 'bil24' ),
-            'public' => false,
+            'public' => true,
+            'publicly_queryable' => true,
             'show_ui' => true,
             'show_in_menu' => 'bil24-settings',
             'show_in_admin_bar' => false,
-            'show_in_nav_menus' => false,
+            'show_in_nav_menus' => true,
             'show_in_rest' => true,
             'rest_base' => 'bil24-events',
             'capability_type' => 'post',
-            'capabilities' => [
-                'create_posts' => 'manage_bil24_events',
-                'edit_posts' => 'manage_bil24_events',
-                'edit_others_posts' => 'manage_bil24_events',
-                'publish_posts' => 'manage_bil24_events',
-                'read_private_posts' => 'manage_bil24_events',
-                'delete_posts' => 'manage_bil24_events',
-                'delete_private_posts' => 'manage_bil24_events',
-                'delete_published_posts' => 'manage_bil24_events',
-                'delete_others_posts' => 'manage_bil24_events',
-                'edit_private_posts' => 'manage_bil24_events',
-                'edit_published_posts' => 'manage_bil24_events',
-            ],
+            'map_meta_cap' => true,
             'supports' => [ 'title', 'editor', 'custom-fields', 'thumbnail', 'excerpt' ],
             'taxonomies' => [],
-            'has_archive' => false,
-            'rewrite' => false,
-            'query_var' => false,
+            'has_archive' => true,
+            'rewrite' => [
+                'slug' => 'events',
+                'with_front' => false,
+            ],
+            'query_var' => true,
         ]);
 
         // Session CPT
@@ -296,9 +288,22 @@ final class Plugin {
             new \Bil24\Integrations\OrderSync();
         }
         
+        // Frontend event display
+        if ( ! is_admin() && class_exists( '\\Bil24\\Frontend\\EventDisplay' ) ) {
+            new \Bil24\Frontend\EventDisplay();
+        }
+        
         // WooCommerce integration
-        if ( Utils::is_woocommerce_active() ) {
+        if ( Utils::is_woocommerce_active() && class_exists( '\\Bil24\\Integrations\\WooCommerce\\Integration' ) ) {
             // Initialize WooCommerce integration
+            try {
+                $wc_integration = new \Bil24\Integrations\WooCommerce\Integration();
+                Utils::log( 'WooCommerce интеграция успешно инициализирована', Constants::LOG_LEVEL_INFO );
+            } catch ( \Exception $e ) {
+                Utils::log( 'Ошибка инициализации WooCommerce интеграции: ' . $e->getMessage(), Constants::LOG_LEVEL_ERROR );
+            }
+        } else if ( ! Utils::is_woocommerce_active() ) {
+            Utils::log( 'WooCommerce не активен, интеграция пропущена', Constants::LOG_LEVEL_WARNING );
         }
     }
 

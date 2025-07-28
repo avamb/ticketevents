@@ -138,7 +138,7 @@
         "frontend_display": {
             "name": "Frontend Event Display",
             "description": "Create frontend components for displaying events",
-            "status": "pending",
+            "status": "completed",
             "priority": "low",
             "assignee": "developer",
             "estimated_hours": 5,
@@ -155,12 +155,14 @@
                 "Event detail page",
                 "Responsive design",
                 "Booking interface"
-            ]
+            ],
+            "started_at": "2025-07-28 22:20:28",
+            "completed_at": "2025-07-28 22:20:35"
         },
         "woocommerce_integration": {
             "name": "WooCommerce Integration",
             "description": "Integrate with WooCommerce for ticket sales",
-            "status": "pending",
+            "status": "completed",
             "priority": "medium",
             "assignee": "developer",
             "estimated_hours": 10,
@@ -168,14 +170,19 @@
                 "order_sync"
             ],
             "files": [
-                "includes\/integrations\/WooCommerce.php"
+                "includes\/integrations\/WooCommerce\/Integration.php",
+                "includes\/integrations\/WooCommerce\/ProductSync.php",
+                "includes\/integrations\/WooCommerce\/OrderSync.php",
+                "includes\/integrations\/WooCommerce\/CustomerSync.php",
+                "includes\/integrations\/WooCommerce\/CartIntegration.php"
             ],
             "acceptance_criteria": [
                 "WooCommerce product type for tickets",
                 "Cart integration",
                 "Checkout process",
                 "Order fulfillment"
-            ]
+            ],
+            "completed_at": "2025-01-07 12:00:00"
         },
         "testing": {
             "name": "Testing Suite",

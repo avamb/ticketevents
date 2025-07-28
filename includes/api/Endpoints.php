@@ -24,7 +24,7 @@ class Endpoints {
     /**
      * Constructor
      */
-    public function __construct( Client $client = null ) {
+    public function __construct( ?Client $client = null ) {
         $this->client = $client ?? new Client();
     }
 

@@ -53,7 +53,7 @@ class OrderSync {
     /**
      * Constructor
      */
-    public function __construct( Endpoints $api = null ) {
+    public function __construct( ?Endpoints $api = null ) {
         $this->api = $api ?? new Endpoints();
         $this->register_hooks();
     }

@@ -1,0 +1,692 @@
+/**
+ * Bil24 Events CSS
+ * Styles for event listing, detail pages, and booking interface
+ */
+
+/* ==========================================================================
+   Events Container & Layout
+   ========================================================================== */
+
+.bil24-events-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.bil24-events-list {
+    display: grid;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+/* Grid View */
+.bil24-events-list.bil24-view-grid {
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+}
+
+/* List View */
+.bil24-events-list.bil24-view-list {
+    grid-template-columns: 1fr;
+}
+
+.bil24-events-list.bil24-view-list .bil24-event-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.bil24-events-list.bil24-view-list .bil24-event-image {
+    flex-shrink: 0;
+    width: 200px;
+}
+
+.bil24-events-list.bil24-view-list .bil24-event-content {
+    flex: 1;
+}
+
+/* ==========================================================================
+   Event Filters
+   ========================================================================== */
+
+.bil24-event-filters {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.bil24-filters-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: end;
+}
+
+.bil24-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.bil24-filter-group label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 14px;
+}
+
+.bil24-filter-group input,
+.bil24-filter-group select {
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+    background: white;
+    transition: border-color 0.15s ease;
+}
+
+.bil24-filter-group input:focus,
+.bil24-filter-group select:focus {
+    outline: none;
+    border-color: #007cba;
+    box-shadow: 0 0 0 2px rgba(0, 124, 186, 0.1);
+}
+
+.bil24-filter-submit {
+    background: #007cba;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.bil24-filter-submit:hover {
+    background: #005a87;
+}
+
+/* View Toggle */
+.bil24-view-toggle {
+    flex-direction: row !important;
+    gap: 5px !important;
+}
+
+.bil24-view-btn {
+    background: #e9ecef;
+    border: 1px solid #ced4da;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.15s ease;
+}
+
+.bil24-view-btn:hover,
+.bil24-view-btn.active {
+    background: #007cba;
+    color: white;
+    border-color: #007cba;
+}
+
+/* ==========================================================================
+   Event Items
+   ========================================================================== */
+
+.bil24-event-item {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bil24-event-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.bil24-event-image {
+    position: relative;
+    overflow: hidden;
+    height: 200px;
+}
+
+.bil24-event-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.bil24-event-item:hover .bil24-event-image img {
+    transform: scale(1.05);
+}
+
+.bil24-event-content {
+    padding: 20px;
+}
+
+.bil24-event-title {
+    margin: 0 0 15px 0;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.bil24-event-title a {
+    color: #2c3e50;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.bil24-event-title a:hover {
+    color: #007cba;
+}
+
+.bil24-event-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.bil24-event-meta > div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.bil24-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.bil24-event-excerpt {
+    margin-bottom: 20px;
+    color: #495057;
+    line-height: 1.5;
+}
+
+.bil24-event-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   Single Event Layout
+   ========================================================================== */
+
+.bil24-single-event {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.bil24-event-header {
+    margin-bottom: 40px;
+}
+
+.bil24-event-banner {
+    width: 100%;
+    height: 400px;
+    overflow: hidden;
+    border-radius: 12px;
+    margin-bottom: 30px;
+}
+
+.bil24-event-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.bil24-event-title-section .bil24-event-title {
+    font-size: 36px;
+    font-weight: 700;
+    margin: 0 0 20px 0;
+    color: #2c3e50;
+    line-height: 1.2;
+}
+
+.bil24-event-title-section .bil24-event-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.bil24-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #007cba;
+}
+
+.bil24-meta-label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.bil24-meta-value {
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+/* ==========================================================================
+   Event Description
+   ========================================================================== */
+
+.bil24-event-description {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 40px;
+}
+
+.bil24-event-description h3 {
+    margin: 0 0 20px 0;
+    font-size: 24px;
+    color: #2c3e50;
+    border-bottom: 2px solid #007cba;
+    padding-bottom: 10px;
+}
+
+.bil24-event-content {
+    line-height: 1.6;
+    color: #495057;
+}
+
+/* ==========================================================================
+   Sessions
+   ========================================================================== */
+
+.bil24-event-sessions {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 40px;
+}
+
+.bil24-event-sessions h3 {
+    margin: 0 0 20px 0;
+    font-size: 24px;
+    color: #2c3e50;
+    border-bottom: 2px solid #007cba;
+    padding-bottom: 10px;
+}
+
+.bil24-sessions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.bil24-session-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    background: #f8f9fa;
+    transition: all 0.15s ease;
+}
+
+.bil24-session-item:hover {
+    border-color: #007cba;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 124, 186, 0.1);
+}
+
+.bil24-session-info {
+    flex: 1;
+}
+
+.bil24-session-datetime {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 8px;
+}
+
+.bil24-session-date {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 16px;
+}
+
+.bil24-session-time {
+    color: #007cba;
+    font-weight: 500;
+}
+
+.bil24-session-venue {
+    color: #6c757d;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.bil24-session-availability .bil24-available {
+    color: #28a745;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.bil24-session-availability .bil24-sold-out {
+    color: #dc3545;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.bil24-session-booking {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.bil24-session-price {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+/* ==========================================================================
+   Booking Interface
+   ========================================================================== */
+
+.bil24-booking-interface {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 40px;
+}
+
+.bil24-booking-interface h3 {
+    margin: 0 0 20px 0;
+    font-size: 24px;
+    color: #2c3e50;
+    border-bottom: 2px solid #007cba;
+    padding-bottom: 10px;
+}
+
+.bil24-booking-step {
+    margin-bottom: 30px;
+    padding: 20px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    background: #f8f9fa;
+}
+
+.bil24-booking-step h4 {
+    margin: 0 0 15px 0;
+    font-size: 18px;
+    color: #2c3e50;
+}
+
+.bil24-booking-step.active {
+    border-color: #007cba;
+    background: white;
+}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+
+.bil24-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    min-height: 44px;
+    box-sizing: border-box;
+}
+
+.bil24-btn-primary {
+    background: #007cba;
+    color: white;
+}
+
+.bil24-btn-primary:hover {
+    background: #005a87;
+    color: white;
+    text-decoration: none;
+}
+
+.bil24-btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.bil24-btn-secondary:hover {
+    background: #545b62;
+    color: white;
+}
+
+.bil24-btn-disabled {
+    background: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
+}
+
+.bil24-btn-disabled:hover {
+    background: #e9ecef;
+    color: #6c757d;
+}
+
+/* ==========================================================================
+   Loading & Messages
+   ========================================================================== */
+
+.bil24-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.bil24-loading::before {
+    content: "⏳";
+    margin-right: 10px;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.bil24-no-events,
+.bil24-no-sessions {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+}
+
+.bil24-no-events p,
+.bil24-no-sessions p {
+    margin: 0;
+    font-size: 16px;
+}
+
+/* ==========================================================================
+   Responsive Design
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .bil24-events-container {
+        padding: 15px;
+    }
+    
+    .bil24-events-list.bil24-view-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .bil24-events-list.bil24-view-list .bil24-event-item {
+        flex-direction: column;
+    }
+    
+    .bil24-events-list.bil24-view-list .bil24-event-image {
+        width: 100%;
+    }
+    
+    .bil24-filters-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .bil24-view-toggle {
+        flex-direction: row !important;
+        justify-content: center;
+    }
+    
+    .bil24-event-title-section .bil24-event-title {
+        font-size: 28px;
+    }
+    
+    .bil24-event-title-section .bil24-event-meta {
+        grid-template-columns: 1fr;
+    }
+    
+    .bil24-session-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+    
+    .bil24-session-booking {
+        justify-content: space-between;
+    }
+    
+    .bil24-event-actions {
+        flex-direction: column;
+    }
+    
+    .bil24-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .bil24-events-container {
+        padding: 10px;
+    }
+    
+    .bil24-event-content {
+        padding: 15px;
+    }
+    
+    .bil24-event-description,
+    .bil24-event-sessions,
+    .bil24-booking-interface {
+        padding: 20px;
+    }
+    
+    .bil24-event-banner {
+        height: 250px;
+    }
+    
+    .bil24-event-title-section .bil24-event-title {
+        font-size: 24px;
+    }
+}
+
+/* ==========================================================================
+   Animation
+   ========================================================================== */
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.bil24-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==========================================================================
+   Notifications
+   ========================================================================== */
+
+.bil24-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 6px;
+    color: white;
+    font-weight: 600;
+    z-index: 9999;
+    max-width: 300px;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.bil24-notification.bil24-notification-show {
+    transform: translateX(0);
+}
+
+.bil24-notification-success {
+    background: #28a745;
+}
+
+.bil24-notification-error {
+    background: #dc3545;
+}
+
+.bil24-notification-warning {
+    background: #ffc107;
+    color: #212529;
+}
+
+.bil24-notification-info {
+    background: #17a2b8;
+}
+
+/* ==========================================================================
+   Print Styles
+   ========================================================================== */
+
+@media print {
+    .bil24-event-filters,
+    .bil24-event-actions,
+    .bil24-booking-interface,
+    .bil24-notification {
+        display: none;
+    }
+    
+    .bil24-event-item {
+        box-shadow: none;
+        border: 1px solid #ccc;
+        break-inside: avoid;
+    }
+} 

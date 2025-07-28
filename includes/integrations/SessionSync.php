@@ -25,7 +25,7 @@ class SessionSync {
     /**
      * Constructor
      */
-    public function __construct( Endpoints $api = null ) {
+    public function __construct( ?Endpoints $api = null ) {
         $this->api = $api ?? new Endpoints();
         $this->register_hooks();
     }
@@ -537,7 +537,7 @@ class SessionSync {
     /**
      * Sync session from Bil24 data
      */
-    private function sync_session_from_bil24_data( array $bil24_session, int $event_bil24_id, int $existing_post_id = null ): array {
+    private function sync_session_from_bil24_data( array $bil24_session, int $event_bil24_id, ?int $existing_post_id = null ): array {
         $bil24_session_id = $bil24_session['id'] ?? null;
         
         if ( ! $bil24_session_id ) {
