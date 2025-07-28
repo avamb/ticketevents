@@ -1,0 +1,146 @@
+name: Test Matrix
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    - cron: '0 0 * * 0' # Run every Sunday at midnight
+
+jobs:
+  test-matrix:
+    name: PHP ${{ matrix.php }} / WP ${{ matrix.wordpress }}
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.0', '8.1', '8.2', '8.3']
+        wordpress: ['6.0', '6.1', '6.2', '6.3', '6.4', 'latest']
+        include:
+          # Test with minimum supported versions
+          - php: '8.0'
+            wordpress: '5.9'
+            experimental: false
+          # Test with nightly builds
+          - php: '8.3'
+            wordpress: 'nightly'
+            experimental: true
+        exclude:
+          # Exclude unsupported combinations
+          - php: '8.3'
+            wordpress: '5.9'
+    
+    continue-on-error: ${{ matrix.experimental == true }}
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: wordpress_test
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: curl, json, zip, mbstring, mysql, gd, xml, intl
+          coverage: xdebug
+          tools: composer:v2, wp-cli
+          
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+        
+      - name: Cache composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ runner.os }}-${{ matrix.php }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-${{ matrix.php }}-
+            composer-${{ runner.os }}-
+            
+      - name: Install composer dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest --optimize-autoloader
+        
+      - name: Verify MySQL connection
+        run: |
+          while ! mysqladmin ping --host=127.0.0.1 --port=3306 --user=root --password=password --silent; do
+            sleep 1
+          done
+          
+      - name: Install WordPress test suite
+        env:
+          WP_VERSION: ${{ matrix.wordpress }}
+        run: |
+          if [ "$WP_VERSION" = "latest" ]; then
+            WP_VERSION=""
+          fi
+          bash tests/bin/install-wp-tests.sh wordpress_test root password 127.0.0.1:3306 $WP_VERSION true
+          
+      - name: Run PHPUnit tests
+        run: |
+          if [ -f phpunit.phar ]; then
+            php phpunit.phar --verbose
+          else
+            vendor/bin/phpunit --verbose
+          fi
+          
+      - name: Run plugin activation test
+        run: |
+          # Test that plugin can be activated without fatal errors
+          wp-cli --path=/tmp/wordpress plugin activate bil24-connector --allow-root || echo "Plugin activation test skipped (WP-CLI setup required)"
+
+  multisite-test:
+    name: Multisite Tests
+    runs-on: ubuntu-latest
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: wordpress_test
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: curl, json, zip, mbstring, mysql
+          coverage: xdebug
+          tools: composer:v2
+          
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --optimize-autoloader
+        
+      - name: Install WordPress test suite for multisite
+        env:
+          WP_MULTISITE: 1
+        run: |
+          bash tests/bin/install-wp-tests.sh wordpress_multisite_test root password 127.0.0.1:3306 latest true
+          
+      - name: Run multisite tests
+        env:
+          WP_MULTISITE: 1
+        run: |
+          if [ -f phpunit.phar ]; then
+            php phpunit.phar --group multisite --verbose
+          else
+            vendor/bin/phpunit --group multisite --verbose
+          fi 

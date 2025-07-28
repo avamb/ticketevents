@@ -1,0 +1,30 @@
+# Unit Tests Directory
+
+This directory contains unit tests for individual classes and methods.
+Unit tests should be isolated and not depend on WordPress or external services.
+
+## Structure:
+- ModelsTest/ - Tests for data models
+- ServicesTest/ - Tests for service layer
+- UtilsTest/ - Tests for utility functions
+- ApiTest/ - Tests for API client classes
+
+## Naming Convention:
+- Test files should end with `Test.php`
+- Test classes should end with `Test`
+- Test methods should start with `test`
+
+## Example:
+```php
+<?php
+namespace Bil24\Tests\Unit;
+
+use PHPUnit\Framework\TestCase;
+use Bil24\Models\Event;
+
+class EventTest extends TestCase {
+    public function testEventCreation() {
+        // Test implementation
+    }
+}
+``` 

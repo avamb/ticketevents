@@ -1,0 +1,26 @@
+parameters:
+	level: 5
+	paths:
+		- includes/
+		- bil24-connector.php
+		- taskmaster.php
+		- taskmaster-dashboard.php
+	excludePaths:
+		- includes/admin/
+		- tests/
+		- vendor/
+		- tools/
+	ignoreErrors:
+		# Ignore WordPress specific functions
+		- '#Call to an undefined function (add_action|add_filter|wp_enqueue_script|wp_enqueue_style|get_option|update_option|wp_die|wp_redirect|is_admin|current_user_can|wp_nonce_field|wp_verify_nonce|sanitize_text_field|esc_html|esc_attr|esc_url|__|\w+__)#'
+		# Ignore WordPress specific classes
+		- '#Class (WP_Plugin|WP_List_Table|WP_Error|WP_Query|WP_Post|WP_User) not found#'
+		# Ignore WordPress global variables
+		- '#Undefined variable: \$(wpdb|wp_query|post|current_user)#'
+		# Ignore WordPress constants
+		- '#Constant (ABSPATH|WP_CONTENT_DIR|WP_PLUGIN_DIR|WP_DEBUG|WPINC) not found#'
+	bootstrap: tests/phpstan-bootstrap.php
+	wordpress:
+		functionsFile: vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
+	checkMissingIterableValueType: false
+	checkGenericClassInNonGenericObjectType: false 

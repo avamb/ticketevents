@@ -1,0 +1,165 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    types: [ opened, synchronize, reopened ]
+
+jobs:
+  quick-check:
+    name: Quick Code Quality Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Need full history for changed files detection
+          
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: curl, json, zip, mbstring
+          tools: composer:v2
+          
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --optimize-autoloader
+        
+      - name: Get changed PHP files
+        id: changed-files
+        run: |
+          # Get list of changed PHP files
+          CHANGED_FILES=$(git diff --name-only --diff-filter=AMR ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep '\.php$' | tr '\n' ' ')
+          echo "files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "Changed PHP files: $CHANGED_FILES"
+          
+      - name: Run PHPCS on changed files
+        if: steps.changed-files.outputs.files != ''
+        run: |
+          FILES="${{ steps.changed-files.outputs.files }}"
+          if [ ! -z "$FILES" ]; then
+            echo "Running PHPCS on: $FILES"
+            php tools/phpcs.phar --standard=phpcs.xml.dist $FILES
+          else
+            echo "No PHP files changed"
+          fi
+          
+      - name: Run PHPStan on changed files
+        if: steps.changed-files.outputs.files != ''
+        run: |
+          FILES="${{ steps.changed-files.outputs.files }}"
+          if [ ! -z "$FILES" ]; then
+            echo "Running PHPStan on: $FILES"
+            # Only analyze files that exist in includes/ directory
+            INCLUDES_FILES=$(echo $FILES | tr ' ' '\n' | grep '^includes/' | tr '\n' ' ')
+            if [ ! -z "$INCLUDES_FILES" ]; then
+              vendor/bin/phpstan analyse $INCLUDES_FILES --level=5 --no-progress
+            else
+              echo "No files in includes/ directory changed"
+            fi
+          else
+            echo "No PHP files changed"
+          fi
+        continue-on-error: true
+        
+      - name: Check for syntax errors
+        if: steps.changed-files.outputs.files != ''
+        run: |
+          FILES="${{ steps.changed-files.outputs.files }}"
+          if [ ! -z "$FILES" ]; then
+            echo "Checking syntax of: $FILES"
+            for file in $FILES; do
+              if [ -f "$file" ]; then
+                php -l "$file"
+              fi
+            done
+          else
+            echo "No PHP files changed"
+          fi
+
+  test-changes:
+    name: Test Changes
+    runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.changed_files, 'includes/') || contains(github.event.pull_request.changed_files, 'tests/')
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: wordpress_test
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: curl, json, zip, mbstring, mysql
+          coverage: xdebug
+          tools: composer:v2
+          
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --optimize-autoloader
+        
+      - name: Install WordPress test suite
+        run: |
+          bash tests/bin/install-wp-tests.sh wordpress_test root password 127.0.0.1:3306 latest true
+        continue-on-error: true
+        
+      - name: Run tests
+        run: |
+          if [ -f phpunit.phar ]; then
+            php phpunit.phar --verbose --stop-on-failure
+          else
+            vendor/bin/phpunit --verbose --stop-on-failure
+          fi
+
+  security-check:
+    name: Security Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: curl, json, zip, mbstring
+          tools: composer:v2
+          
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+        
+      - name: Security audit
+        run: composer audit
+        continue-on-error: true
+        
+      - name: Check for common security issues
+        run: |
+          echo "Checking for common security issues..."
+          
+          # Check for SQL injection vulnerabilities
+          if grep -r "\$wpdb->query\|mysql_query\|mysqli_query" includes/ --include="*.php"; then
+            echo "⚠️  Found potential SQL injection risks. Please review database queries."
+          fi
+          
+          # Check for XSS vulnerabilities  
+          if grep -r "echo \$\|print \$" includes/ --include="*.php"; then
+            echo "⚠️  Found potential XSS risks. Please ensure all output is escaped."
+          fi
+          
+          # Check for file inclusion vulnerabilities
+          if grep -r "include\|require" includes/ --include="*.php" | grep -v "includes/"; then
+            echo "⚠️  Found file inclusions. Please review for security."
+          fi
+          
+          echo "Security check completed." 

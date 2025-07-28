@@ -1,0 +1,214 @@
+# Copyright (C) 2024 Bil24 Connector
+# This file is distributed under the same license as the Bil24 Connector package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Bil24 Connector 0.1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/yourname/bil24-connector/issues\n"
+"POT-Creation-Date: 2024-01-28 12:00+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"X-Generator: Bil24 Connector POT Generator\n"
+"X-Domain: bil24\n"
+
+#: includes/admin/SettingsPage.php:32
+msgid "Bil24 Connector Settings"
+msgstr ""
+
+#: includes/admin/SettingsPage.php:33
+msgid "Bil24 Connector"
+msgstr ""
+
+#: includes/admin/SettingsPage.php:60
+msgid "Bil24 Connector — Settings"
+msgstr ""
+
+#: includes/admin/SettingsPage.php:66
+msgid "FID (Interface ID)"
+msgstr ""
+
+#: includes/admin/SettingsPage.php:71
+msgid "Your Bil24 FID (interface identifier)"
+msgstr ""
+
+#: includes/admin/SettingsPage.php:75
+msgid "API Token"
+msgstr ""
+
+#: includes/admin/SettingsPage.php:80
+msgid "Your Bil24 API token for authentication"
+msgstr ""
+
+#: includes/admin/SettingsPage.php:84
+msgid "Environment"
+msgstr ""
+
+#: includes/admin/SettingsPage.php:91
+msgid "Test Environment"
+msgstr ""
+
+#: includes/admin/SettingsPage.php:97
+msgid "Production Environment"
+msgstr ""
+
+#: includes/admin/SettingsPage.php:101
+msgid "Select the Bil24 API environment to connect to"
+msgstr ""
+
+#: includes/admin/SettingsPage.php:108
+msgid "Connection Test"
+msgstr ""
+
+#: includes/admin/SettingsPage.php:109
+msgid "Test the connection to Bil24 API with current settings:"
+msgstr ""
+
+#: includes/admin/SettingsPage.php:111
+msgid "Test Connection"
+msgstr ""
+
+#: includes/admin/SettingsPage.php:120
+msgid "Testing..."
+msgstr ""
+
+#: includes/admin/SettingsPage.php:132
+msgid "Success!"
+msgstr ""
+
+#: includes/admin/SettingsPage.php:136 includes/admin/SettingsPage.php:142
+msgid "Error:"
+msgstr ""
+
+#: includes/admin/SettingsPage.php:157
+msgid "Insufficient permissions"
+msgstr ""
+
+#: includes/admin/SettingsPage.php:165
+msgid "Connection to Bil24 API established successfully!"
+msgstr ""
+
+#: includes/admin/SettingsPage.php:169
+msgid "Failed to connect to Bil24 API. Please check your settings."
+msgstr ""
+
+#. translators: %s: error message
+#: includes/admin/SettingsPage.php:175
+msgid "Connection error: %s"
+msgstr ""
+
+#: includes/Plugin.php:85
+msgid "Bil24 Event"
+msgstr ""
+
+#: includes/Plugin.php:86
+msgid "Bil24 Events"
+msgstr ""
+
+#: includes/Plugin.php:95
+msgid "Event Name"
+msgstr ""
+
+#: includes/Plugin.php:96
+msgid "Search Events"
+msgstr ""
+
+#: includes/Plugin.php:97
+msgid "All Events"
+msgstr ""
+
+#: includes/Plugin.php:98
+msgid "Parent Event:"
+msgstr ""
+
+#: includes/Plugin.php:99
+msgid "Parent Event"
+msgstr ""
+
+#: includes/Plugin.php:100
+msgid "Edit Event"
+msgstr ""
+
+#: includes/Plugin.php:101
+msgid "Update Event"
+msgstr ""
+
+#: includes/Plugin.php:102
+msgid "Add New Event"
+msgstr ""
+
+#: includes/Plugin.php:103
+msgid "New Event"
+msgstr ""
+
+#: includes/Plugin.php:104
+msgid "View Event"
+msgstr ""
+
+#: includes/Plugin.php:105
+msgid "View Events"
+msgstr ""
+
+#: includes/Plugin.php:106
+msgid "No events found"
+msgstr ""
+
+#: includes/Plugin.php:107
+msgid "No events found in trash"
+msgstr ""
+
+#: includes/Utils.php:25
+msgid "Invalid email address"
+msgstr ""
+
+#: includes/Utils.php:35
+msgid "Invalid URL"
+msgstr ""
+
+#: includes/Utils.php:45
+msgid "Invalid date format"
+msgstr ""
+
+#: includes/models/Event.php:89
+msgid "Event title is required"
+msgstr ""
+
+#: includes/models/Event.php:92
+msgid "Event description is required"
+msgstr ""
+
+#: includes/models/Event.php:95
+msgid "Invalid start date"
+msgstr ""
+
+#: includes/models/Event.php:98
+msgid "Invalid end date"
+msgstr ""
+
+#: includes/models/Event.php:101
+msgid "End date must be after start date"
+msgstr ""
+
+#. Plugin Name of the plugin
+msgid "Bil24 Connector"
+msgstr ""
+
+#. Plugin URI of the plugin
+msgid "https://github.com/yourname/bil24-connector"
+msgstr ""
+
+#. Description of the plugin
+msgid "Bil24 ⇄ WordPress/WooCommerce integration plugin. Synchronizes events, sessions, and orders between Bil24 platform and WordPress using robust API client with authentication, caching, and error handling."
+msgstr ""
+
+#. Author of the plugin
+msgid "Your Team"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://yourwebsite.com"
+msgstr "" 

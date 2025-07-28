@@ -1,0 +1,50 @@
+# Development files and directories to exclude from plugin build
+.git/
+.github/
+node_modules/
+vendor/
+tests/
+coverage-html/
+.phpunit.cache/
+
+# Configuration files
+composer.json
+composer.lock
+phpunit.xml
+phpcs.xml.dist
+phpstan.neon
+.gitignore
+.env
+.env.example
+
+# Development tools
+tools/
+phpunit.phar
+*.bat
+PHPUNIT-SETUP.md
+PHPCS-SETUP.md
+TASKMASTER-SETUP.md
+TASKMASTER.md
+
+# Documentation (keep README.md)
+STRUCTURE.md
+CHANGELOG.md
+
+# Cache and temporary files
+*.cache
+*.tmp
+*.log
+coverage.xml
+coverage.txt
+testdox.html
+testdox.txt
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db 

@@ -42,6 +42,21 @@ class Event {
     private string $status = 'draft';
     
     /**
+     * Event venue
+     */
+    private string $venue = '';
+    
+    /**
+     * Event price
+     */
+    private float $price = 0.0;
+    
+    /**
+     * Event currency
+     */
+    private string $currency = 'USD';
+    
+    /**
      * Bil24 external ID
      */
     private ?string $bil24_id = null;
@@ -165,7 +180,7 @@ class Event {
      * Set event status
      */
     public function set_status( string $status ): self {
-        $allowed_statuses = [ 'draft', 'published', 'cancelled', 'sold_out' ];
+        $allowed_statuses = [ 'draft', 'published', 'cancelled', 'sold_out', 'active' ];
         
         if ( in_array( $status, $allowed_statuses, true ) ) {
             $this->status = $status;
@@ -190,6 +205,51 @@ class Event {
     }
     
     /**
+     * Get event venue
+     */
+    public function get_venue(): string {
+        return $this->venue;
+    }
+    
+    /**
+     * Set event venue
+     */
+    public function set_venue( string $venue ): self {
+        $this->venue = function_exists('sanitize_text_field') ? sanitize_text_field( $venue ) : strip_tags( $venue );
+        return $this;
+    }
+    
+    /**
+     * Get event price
+     */
+    public function get_price(): float {
+        return $this->price;
+    }
+    
+    /**
+     * Set event price
+     */
+    public function set_price( float $price ): self {
+        $this->price = max( 0.0, $price ); // Ensure price is not negative
+        return $this;
+    }
+    
+    /**
+     * Get event currency
+     */
+    public function get_currency(): string {
+        return $this->currency;
+    }
+    
+    /**
+     * Set event currency
+     */
+    public function set_currency( string $currency ): self {
+        $this->currency = strtoupper( $currency );
+        return $this;
+    }
+    
+    /**
      * Convert to array
      */
     public function to_array(): array {
@@ -197,11 +257,64 @@ class Event {
             'id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
-            'start_date' => $this->start_date?->format( 'Y-m-d H:i:s' ),
-            'end_date' => $this->end_date?->format( 'Y-m-d H:i:s' ),
+            'start_date' => $this->start_date?->format( 'Y-m-d' ),
+            'end_date' => $this->end_date?->format( 'Y-m-d' ),
+            'venue' => $this->venue,
+            'price' => $this->price,
+            'currency' => $this->currency,
             'status' => $this->status,
             'bil24_id' => $this->bil24_id,
         ];
+    }
+    
+    /**
+     * CamelCase aliases for getters (for test compatibility)
+     */
+    public function getId(): ?int { return $this->get_id(); }
+    public function getTitle(): string { return $this->get_title(); }
+    public function getDescription(): string { return $this->get_description(); }
+    public function getStartDate(): ?string { return $this->start_date?->format( 'Y-m-d' ); }
+    public function getEndDate(): ?string { return $this->end_date?->format( 'Y-m-d' ); }
+    public function getVenue(): string { return $this->get_venue(); }
+    public function getPrice(): float { return $this->get_price(); }
+    public function getCurrency(): string { return $this->get_currency(); }
+    public function getStatus(): string { return $this->get_status(); }
+    public function getBil24Id(): ?string { return $this->get_bil24_id(); }
+    
+    /**
+     * CamelCase aliases for setters (for test compatibility)
+     */
+    public function setId( ?int $id ): self { return $this->set_id( $id ); }
+    public function setTitle( string $title ): self { return $this->set_title( $title ); }
+    public function setDescription( string $description ): self { return $this->set_description( $description ); }
+    public function setStartDate( $date ): self { return $this->set_start_date( $date ); }
+    public function setEndDate( $date ): self { return $this->set_end_date( $date ); }
+    public function setVenue( string $venue ): self { return $this->set_venue( $venue ); }
+    public function setPrice( float $price ): self { return $this->set_price( $price ); }
+    public function setCurrency( string $currency ): self { return $this->set_currency( $currency ); }
+    public function setStatus( string $status ): self { return $this->set_status( $status ); }
+    public function setBil24Id( ?string $bil24_id ): self { return $this->set_bil24_id( $bil24_id ); }
+    
+    /**
+     * toArray alias for test compatibility
+     */
+    public function toArray(): array {
+        return $this->to_array();
+    }
+    
+    /**
+     * Check if event is empty
+     */
+    public function isEmpty(): bool {
+        return empty( $this->title ) && empty( $this->description ) && $this->id === null;
+    }
+    
+    /**
+     * String representation
+     */
+    public function __toString(): string {
+        $date = $this->start_date ? $this->start_date->format( 'Y-m-d' ) : '';
+        return $this->title . ( $date ? " ({$date})" : '' );
     }
     
     /**

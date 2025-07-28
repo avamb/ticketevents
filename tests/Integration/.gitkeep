@@ -1,0 +1,13 @@
+# Integration Tests Directory
+
+This directory contains integration tests that test multiple components working together.
+Integration tests may require WordPress environment or external services.
+
+## Structure:
+- WordPressTest/ - Tests for WordPress integration
+- WooCommerceTest/ - Tests for WooCommerce integration  
+- ApiIntegrationTest/ - Tests for external API integration
+
+## Test Environment:
+Integration tests may require WordPress test suite to be installed.
+Set WP_TESTS_DIR environment variable to point to WordPress test installation. 

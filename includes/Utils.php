@@ -50,5 +50,65 @@ final class Utils {
         return $response;
     }
     
+    /**
+     * Sanitize text field (WordPress compatibility)
+     */
+    public static function sanitize_text_field( string $input ): string {
+        if ( function_exists( 'sanitize_text_field' ) ) {
+            return sanitize_text_field( $input );
+        }
+        
+        // Fallback for unit tests
+        return trim( strip_tags( $input ) );
+    }
+    
+    /**
+     * Validate email address
+     */
+    public static function is_valid_email( string $email ): bool {
+        return filter_var( $email, FILTER_VALIDATE_EMAIL ) !== false;
+    }
+    
+    /**
+     * Validate URL
+     */
+    public static function is_valid_url( string $url ): bool {
+        return filter_var( $url, FILTER_VALIDATE_URL ) !== false;
+    }
+    
+    /**
+     * Get array value with default
+     */
+    public static function get_array_value( array $array, string $key, $default = null ) {
+        return $array[ $key ] ?? $default;
+    }
+    
+    /**
+     * Format date for display
+     */
+    public static function format_date( string $date, string $format = 'Y-m-d' ): string {
+        try {
+            $dateTime = new \DateTime( $date );
+            return $dateTime->format( $format );
+        } catch ( \Exception $e ) {
+            return $date;
+        }
+    }
+    
+    /**
+     * Log error message
+     */
+    public static function log_error( string $message ): bool {
+        self::log( $message, 'error' );
+        return true;
+    }
+    
+    /**
+     * Get plugin version
+     */
+    public static function get_plugin_version(): string {
+        return defined( 'BIL24_VERSION' ) ? BIL24_VERSION : '1.0.0';
+    }
+    
     private function __construct() {}
 } 

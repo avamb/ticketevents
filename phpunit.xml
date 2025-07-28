@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd"
+         bootstrap="tests/bootstrap.php"
+         cacheDirectory=".phpunit.cache"
+         executionOrder="depends,defects"
+         requireCoverageMetadata="true"
+         beStrictAboutCoverageMetadata="true"
+         beStrictAboutOutputDuringTests="true"
+         failOnRisky="true"
+         failOnWarning="true">
+    <testsuites>
+        <testsuite name="Unit Tests">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Integration Tests">
+            <directory>tests/Integration</directory>
+        </testsuite>
+    </testsuites>
+
+    <source restrictDeprecations="true" restrictNotices="true" restrictWarnings="true">
+        <include>
+            <directory>includes</directory>
+        </include>
+        <exclude>
+            <directory>includes/admin</directory>
+            <file>includes/Constants.php</file>
+        </exclude>
+    </source>
+
+    <coverage>
+        <report>
+            <html outputDirectory="coverage-html"/>
+            <text outputFile="coverage.txt"/>
+            <clover outputFile="coverage.xml"/>
+        </report>
+    </coverage>
+
+    <logging>
+        <testdoxHtml outputFile="testdox.html"/>
+        <testdoxText outputFile="testdox.txt"/>
+    </logging>
+
+    <php>
+        <const name="WP_TESTS_DOMAIN" value="example.org"/>
+        <const name="WP_TESTS_EMAIL" value="admin@example.org"/>
+        <const name="WP_TESTS_TITLE" value="Test Blog"/>
+        <const name="WP_PHP_BINARY" value="php"/>
+        <const name="WP_TESTS_FORCE_KNOWN_BUGS" value="false"/>
+        
+        <!-- Plugin specific constants -->
+        <const name="BIL24_PLUGIN_DIR" value="./"/>
+        <const name="BIL24_PLUGIN_URL" value="http://example.org/wp-content/plugins/bil24-connector/"/>
+        <const name="BIL24_VERSION" value="1.0.0"/>
+        
+        <!-- Environment variables for testing -->
+        <env name="WP_ENV" value="testing"/>
+        <env name="WP_DEBUG" value="true"/>
+    </php>
+</phpunit> 
