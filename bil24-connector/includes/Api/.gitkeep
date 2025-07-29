@@ -1,0 +1,9 @@
+# API Directory
+
+This directory contains API-related classes for the Bil24 Connector plugin.
+
+## Structure
+- `Endpoints/` - API endpoint handlers
+- `Middleware/` - API middleware classes
+- `Validators/` - Request/response validators
+- `Controllers/` - API controllers 

@@ -1,0 +1,9 @@
+# WooCommerce Integration
+
+This directory contains WooCommerce-specific integration classes.
+
+## Structure
+- `ProductSync.php` - Product synchronization
+- `OrderSync.php` - Order synchronization
+- `CustomerSync.php` - Customer synchronization
+- `CartIntegration.php` - Shopping cart integration 

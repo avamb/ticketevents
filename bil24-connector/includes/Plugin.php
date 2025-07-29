@@ -51,7 +51,6 @@ final class Plugin {
         if ( is_admin() ) {
             add_action( 'admin_init', [ $this, 'admin_init' ] );
             add_action( 'admin_menu', [ $this, 'admin_menu' ] );
-            add_action( 'admin_notices', [ $this, 'admin_notices' ] );
             add_filter( 'plugin_action_links_' . BIL24_CONNECTOR_PLUGIN_BASENAME, [ $this, 'plugin_action_links' ] );
             add_action( 'wp_ajax_bil24_test_connection', [ $this, 'ajax_test_connection' ] );
         }
@@ -145,21 +144,33 @@ final class Plugin {
      * Initialize admin area
      */
     public function admin_init(): void {
-        // Загружаем необходимые классы
+        // Ensure SettingsPage class is loaded
         $this->load_admin_classes();
         
-        // Инициализируем страницу настроек
+        // Register settings only (menu is handled in admin_menu hook)
         if ( class_exists( '\\Bil24\\Admin\\SettingsPage' ) ) {
             $settings_page = new \Bil24\Admin\SettingsPage();
-            $settings_page->register();
+            $settings_page->register_settings();
         }
     }
     
     /**
-     * Initialize admin menu - оставляем только для добавления главного меню
+     * Initialize admin menu
      */
     public function admin_menu(): void {
-        // Добавляем в главное меню для лучшей видимости
+        // Ensure SettingsPage class is loaded
+        $this->load_admin_classes();
+        
+        // Добавляем страницу настроек в меню Настройки
+        add_options_page(
+            __( 'Bil24 Connector Settings', 'bil24' ),
+            __( 'Bil24 Connector', 'bil24' ),
+            'manage_options',
+            'bil24-connector',
+            [ $this, 'render_settings_page' ]
+        );
+        
+        // Альтернативно добавляем в главное меню для лучшей видимости
         add_menu_page(
             __( 'Bil24 Connector', 'bil24' ),
             __( 'Bil24', 'bil24' ),
@@ -212,19 +223,47 @@ final class Plugin {
      * Render settings page
      */
     public function render_settings_page(): void {
-        // Загружаем необходимые классы
+        // Ensure SettingsPage class is loaded
         $this->load_admin_classes();
         
         if ( class_exists( '\\Bil24\\Admin\\SettingsPage' ) ) {
             $settings_page = new \Bil24\Admin\SettingsPage();
             $settings_page->render_page();
         } else {
-            // Простое сообщение об ошибке
+            // Fallback - показываем отладочную информацию
             echo '<div class="wrap">';
-            echo '<h1>' . esc_html__( 'Bil24 Connector', 'bil24' ) . '</h1>';
-            echo '<div class="notice notice-error"><p>';
-            echo esc_html__( 'Settings page could not be loaded. Please check if the plugin is properly installed.', 'bil24' );
-            echo '</p></div>';
+            echo '<h1>Bil24 Connector - Debug Info</h1>';
+            echo '<div class="notice notice-error"><p><strong>Ошибка:</strong> Класс SettingsPage не найден.</p></div>';
+            
+            echo '<h2>Отладочная информация:</h2>';
+            echo '<ul>';
+            echo '<li><strong>Файл SettingsPage:</strong> ' . ( file_exists( __DIR__ . '/Admin/SettingsPage.php' ) ? '✅ Найден' : '❌ Не найден' ) . '</li>';
+            echo '<li><strong>Автозагрузчик:</strong> ' . ( file_exists( BIL24_CONNECTOR_PLUGIN_DIR . 'vendor/autoload.php' ) ? '✅ Найден' : '❌ Не найден' ) . '</li>';
+            echo '<li><strong>Директория плагина:</strong> ' . BIL24_CONNECTOR_PLUGIN_DIR . '</li>';
+            echo '<li><strong>Включенные файлы:</strong></li>';
+            
+            $included_files = get_included_files();
+            foreach ( $included_files as $file ) {
+                if ( strpos( $file, 'bil24' ) !== false || strpos( $file, 'Bil24' ) !== false ) {
+                    echo '<li style="margin-left: 20px;">• ' . esc_html( $file ) . '</li>';
+                }
+            }
+            echo '</ul>';
+            
+            echo '<p><strong>Попытка прямой загрузки:</strong></p>';
+            $settings_file = __DIR__ . '/Admin/SettingsPage.php';
+            if ( file_exists( $settings_file ) ) {
+                require_once $settings_file;
+                if ( class_exists( '\\Bil24\\Admin\\SettingsPage' ) ) {
+                    echo '<div class="notice notice-success"><p>✅ Класс успешно загружен напрямую!</p></div>';
+                    $settings_page = new \Bil24\Admin\SettingsPage();
+                    $settings_page->render_page();
+                    return;
+                } else {
+                    echo '<div class="notice notice-error"><p>❌ Класс не загрузился даже после прямого подключения файла.</p></div>';
+                }
+            }
+            
             echo '</div>';
         }
     }
@@ -446,41 +485,6 @@ final class Plugin {
     }
 
     /**
-     * Show admin notices
-     */
-    public function admin_notices(): void {
-        // Проверяем настройки только на страницах админки
-        if ( ! current_user_can( 'manage_options' ) ) {
-            return;
-        }
-        
-        // Не показываем уведомление на самой странице настроек
-        $screen = get_current_screen();
-        if ( $screen && ( $screen->id === 'settings_page_bil24-connector' || $screen->id === 'toplevel_page_bil24-main' ) ) {
-            return;
-        }
-        
-        $this->load_admin_classes();
-        
-        try {
-            $api = new \Bil24\Api\Client();
-            $status = $api->get_config_status();
-            
-            if ( ! $status['configured'] ) {
-                echo '<div class="notice notice-warning is-dismissible">';
-                echo '<p><strong>' . esc_html__( 'Bil24 Connector', 'bil24' ) . ':</strong> ';
-                echo esc_html__( 'Plugin requires configuration to work properly.', 'bil24' );
-                echo ' <a href="' . esc_url( admin_url( 'admin.php?page=bil24-main' ) ) . '">';
-                echo esc_html__( 'Configure now', 'bil24' );
-                echo '</a></p>';
-                echo '</div>';
-            }
-        } catch ( \Exception $e ) {
-            // Ошибки игнорируем, чтобы не спамить админку
-        }
-    }
-
-    /**
      * Check plugin requirements
      */
     private static function check_requirements(): bool {
@@ -511,25 +515,13 @@ final class Plugin {
      * Set default plugin options
      */
     private static function set_default_options(): void {
-        // Основные настройки API (то что ожидает SettingsPage)
-        $api_settings = [
-            'fid'   => '',
-            'token' => '',
-            'env'   => 'test',
-        ];
-        
-        // Технические настройки (для внутреннего использования)
-        $technical_settings = [
+        $default_settings = [
             'api_timeout' => Constants::API_TIMEOUT,
             'cache_expiration' => Constants::CACHE_EXPIRATION,
             'log_level' => Constants::LOG_LEVEL_INFO,
             'sync_interval' => Constants::CRON_SYNC_INTERVAL,
         ];
         
-        // Объединяем настройки
-        $default_settings = array_merge($api_settings, $technical_settings);
-        
-        // Устанавливаем только если настройки еще не существуют
         if ( ! get_option( Constants::OPTION_SETTINGS ) ) {
             update_option( Constants::OPTION_SETTINGS, $default_settings );
         }

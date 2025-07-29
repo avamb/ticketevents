@@ -1,0 +1,9 @@
+# Public Directory
+
+This directory contains frontend-facing classes for the Bil24 Connector plugin.
+
+## Structure
+- `Shortcodes/` - WordPress shortcode implementations
+- `Widgets/` - WordPress widget classes
+- `Blocks/` - Gutenberg block implementations
+- `Templates/` - Template handling classes 
