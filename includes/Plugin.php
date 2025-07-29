@@ -50,8 +50,9 @@ final class Plugin {
         // Admin hooks
         if ( is_admin() ) {
             add_action( 'admin_init', [ $this, 'admin_init' ] );
-            // Принудительное добавление меню на раннем этапе
-            add_action( 'admin_menu', [ $this, 'force_add_menu' ], 1 );
+            add_action( 'admin_menu', [ $this, 'admin_menu' ] );
+            add_filter( 'plugin_action_links_' . BIL24_CONNECTOR_PLUGIN_BASENAME, [ $this, 'plugin_action_links' ] );
+            add_action( 'wp_ajax_bil24_test_connection', [ $this, 'ajax_test_connection' ] );
         }
 
         $this->initialized = true;
@@ -143,22 +144,18 @@ final class Plugin {
      * Initialize admin area
      */
     public function admin_init(): void {
-        // Initialize admin settings page
+        // Register settings only (menu is handled in admin_menu hook)
         if ( class_exists( '\\Bil24\\Admin\\SettingsPage' ) ) {
-            ( new \Bil24\Admin\SettingsPage() )->register();
+            $settings_page = new \Bil24\Admin\SettingsPage();
+            $settings_page->register_settings();
         }
-        
-
     }
     
     /**
-     * Принудительное добавление меню на раннем этапе
+     * Initialize admin menu
      */
-    public function force_add_menu(): void {
-        // Логируем попытку
-        Utils::log( 'Попытка принудительного добавления меню', Constants::LOG_LEVEL_DEBUG );
-        
-        // Добавляем меню напрямую
+    public function admin_menu(): void {
+        // Добавляем страницу настроек в меню Настройки
         add_options_page(
             __( 'Bil24 Connector Settings', 'bil24' ),
             __( 'Bil24 Connector', 'bil24' ),
@@ -166,10 +163,36 @@ final class Plugin {
             'bil24-connector',
             [ $this, 'render_settings_page' ]
         );
+        
+        // Альтернативно добавляем в главное меню для лучшей видимости
+        add_menu_page(
+            __( 'Bil24 Connector', 'bil24' ),
+            __( 'Bil24', 'bil24' ),
+            'manage_options',
+            'bil24-main',
+            [ $this, 'render_settings_page' ],
+            'dashicons-tickets-alt',
+            30
+        );
     }
     
     /**
-     * Рендер страницы настроек (fallback)
+     * Add plugin action links (Settings link)
+     */
+    public function plugin_action_links( array $links ): array {
+        $settings_link = sprintf(
+            '<a href="%s">%s</a>',
+            admin_url( 'options-general.php?page=bil24-connector' ),
+            __( 'Settings', 'bil24' )
+        );
+        
+        array_unshift( $links, $settings_link );
+        
+        return $links;
+    }
+    
+    /**
+     * Render settings page
      */
     public function render_settings_page(): void {
         if ( class_exists( '\\Bil24\\Admin\\SettingsPage' ) ) {
@@ -177,6 +200,46 @@ final class Plugin {
             $settings_page->render_page();
         } else {
             echo '<div class="wrap"><h1>Bil24 Connector</h1><p>Ошибка: Класс SettingsPage не найден.</p></div>';
+        }
+    }
+    
+    /**
+     * AJAX handler for connection testing
+     */
+    public function ajax_test_connection(): void {
+        check_ajax_referer( 'bil24_test_connection' );
+        
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( __( 'Insufficient permissions', 'bil24' ) );
+        }
+
+        try {
+            if ( class_exists( '\\Bil24\\Api\\Client' ) ) {
+                $api = new \Bil24\Api\Client();
+                $connected = $api->test_connection();
+                
+                if ( $connected ) {
+                    wp_send_json_success( [
+                        'message' => __( 'Connection to Bil24 API established successfully!', 'bil24' )
+                    ] );
+                } else {
+                    wp_send_json_error( [
+                        'message' => __( 'Failed to connect to Bil24 API. Please check your settings.', 'bil24' )
+                    ] );
+                }
+            } else {
+                wp_send_json_error( [
+                    'message' => __( 'API Client class not found.', 'bil24' )
+                ] );
+            }
+        } catch ( \Exception $e ) {
+            wp_send_json_error( [
+                'message' => sprintf( 
+                    /* translators: %s: error message */
+                    __( 'Connection error: %s', 'bil24' ), 
+                    $e->getMessage() 
+                )
+            ] );
         }
     }
 

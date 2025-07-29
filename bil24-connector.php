@@ -4,7 +4,7 @@
  * Plugin Name: Bil24 Connector
  * Plugin URI: https://github.com/yourname/bil24-connector
  * Description: Bil24 ⇄ WordPress/WooCommerce integration plugin. Synchronizes events, sessions, and orders between Bil24 platform and WordPress using robust API client with authentication, caching, and error handling.
- * Version: 0.1.1
+ * Version: 0.1.2
  * Requires at least: 6.2
  * Tested up to: 6.4
  * Requires PHP: 8.0
@@ -25,7 +25,7 @@
 defined('ABSPATH') || exit;
 
 // Define plugin constants
-define('BIL24_CONNECTOR_VERSION', '0.1.1');
+define('BIL24_CONNECTOR_VERSION', '0.1.2');
 define('BIL24_CONNECTOR_PLUGIN_FILE', __FILE__);
 define('BIL24_CONNECTOR_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('BIL24_CONNECTOR_PLUGIN_URL', plugin_dir_url(__FILE__));

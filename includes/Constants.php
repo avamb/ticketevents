@@ -13,7 +13,7 @@ final class Constants {
     
     // Plugin info (fallback values when global constants are not available)
     public const PLUGIN_NAME = 'Bil24 Connector';
-    public const PLUGIN_VERSION = '0.1.1';
+    public const PLUGIN_VERSION = '0.1.2';
     public const PLUGIN_SLUG = 'bil24-connector';
     public const TEXT_DOMAIN = 'bil24';
     
