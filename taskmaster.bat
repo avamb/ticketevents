@@ -1,6 +1,10 @@
 @echo off
+chcp 65001 >nul 2>&1
 REM Taskmaster AI - Windows Batch File
 REM Usage: taskmaster.bat [command] [options]
+
+REM Set error handling
+setlocal enabledelayedexpansion
 
 if "%1"=="" (
     echo Taskmaster AI - Bil24 Connector Task Management
@@ -57,6 +61,12 @@ if exist "C:\wamp64\bin\php\php8.0.0\php.exe" (
     goto :run_taskmaster
 )
 
+REM Check for Laravel Valet or Herd
+if exist "%USERPROFILE%\.config\herd\bin\php.exe" (
+    set PHP_CMD=%USERPROFILE%\.config\herd\bin\php.exe
+    goto :run_taskmaster
+)
+
 REM If PHP not found, show error
 echo Error: PHP not found!
 echo.
@@ -68,6 +78,8 @@ echo   - C:\wamp\bin\php\php8.0.0\php.exe
 echo   - C:\wamp64\bin\php\php8.0.0\php.exe
 echo.
 echo Or download PHP from: https://windows.php.net/download/
+echo.
+pause
 goto :eof
 
 :run_taskmaster

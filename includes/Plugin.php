@@ -94,6 +94,11 @@ final class Plugin {
         if ( $use_test_version ) {
             // Загружаем тестовую версию
             $test_settings_file = __DIR__ . '/Admin/SettingsPage-NO-CAPS-CHECK.php';
+            // Try lower-case variant if canonical path not found (case-sensitive filesystems)
+            if ( ! file_exists( $test_settings_file ) ) {
+                $test_settings_file = __DIR__ . '/admin/SettingsPage-NO-CAPS-CHECK.php';
+            }
+
             if ( file_exists( $test_settings_file ) ) {
                 require_once $test_settings_file;
                 
@@ -195,6 +200,12 @@ final class Plugin {
         
         // Отладочная информация
         if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+            error_log( '[Bil24] === ДИАГНОСТИКА ПУТЕЙ ===' );
+            error_log( '[Bil24] Plugin file: ' . BIL24_CONNECTOR_PLUGIN_FILE );
+            error_log( '[Bil24] Plugin dir: ' . BIL24_CONNECTOR_PLUGIN_DIR );
+            error_log( '[Bil24] Plugin basename: ' . BIL24_CONNECTOR_PLUGIN_BASENAME );
+            error_log( '[Bil24] Current folder name: ' . basename( BIL24_CONNECTOR_PLUGIN_DIR ) );
+            error_log( '[Bil24] Includes dir: ' . $includes_dir );
             error_log( '[Bil24] Loading admin classes from: ' . $includes_dir );
         }
         
@@ -203,6 +214,8 @@ final class Plugin {
             'Utils.php' => '\\Bil24\\Utils',
             'Constants.php' => '\\Bil24\\Constants', 
             'Admin/SettingsPage.php' => '\\Bil24\\Admin\\SettingsPage',
+            // fallback lowercase directory for case-sensitive servers
+            'admin/SettingsPage.php' => '\\Bil24\\Admin\\SettingsPage',
             'Api/Client.php' => '\\Bil24\\Api\\Client',
             'Api/Endpoints.php' => '\\Bil24\\Api\\Endpoints'
         ];
@@ -210,7 +223,8 @@ final class Plugin {
         // Если активирован тестовый режим, добавляем тестовый файл
         $use_test_version = isset( $_GET['bil24_test'] ) && $_GET['bil24_test'] === '1';
         if ( $use_test_version ) {
-            $files_to_load['Admin/SettingsPage-NO-CAPS-CHECK.php'] = '\\Bil24\\Admin\\SettingsPageNoCapsCheck';
+            $files_to_load['Admin/SettingsPage-NO-CAPS-CHECK.php']  = '\\Bil24\\Admin\\SettingsPageNoCapsCheck';
+            $files_to_load['admin/SettingsPage-NO-CAPS-CHECK.php']  = '\\Bil24\\Admin\\SettingsPageNoCapsCheck';
             
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
                 error_log( '[Bil24] Test mode activated - will load SettingsPageNoCapsCheck' );
@@ -220,6 +234,11 @@ final class Plugin {
         foreach ( $files_to_load as $file => $class ) {
             if ( ! class_exists( $class ) ) {
                 $full_path = $includes_dir . '/' . $file;
+                
+                if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                    error_log( "[Bil24] Checking file: {$full_path}" );
+                    error_log( "[Bil24] File exists: " . ( file_exists( $full_path ) ? 'YES' : 'NO' ) );
+                }
                 
                 if ( file_exists( $full_path ) ) {
                     try {

@@ -31,6 +31,14 @@ define('BIL24_CONNECTOR_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('BIL24_CONNECTOR_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('BIL24_CONNECTOR_PLUGIN_BASENAME', plugin_basename(__FILE__));
 
+// Добавим отладочную информацию о путях
+if (defined('WP_DEBUG') && WP_DEBUG) {
+    error_log('[Bil24] Plugin constants:');
+    error_log('  - PLUGIN_DIR: ' . BIL24_CONNECTOR_PLUGIN_DIR);
+    error_log('  - PLUGIN_BASENAME: ' . BIL24_CONNECTOR_PLUGIN_BASENAME);
+    error_log('  - Plugin folder name: ' . basename(BIL24_CONNECTOR_PLUGIN_DIR));
+}
+
 // Load plugin text domain
 add_action('plugins_loaded', 'bil24_connector_load_textdomain');
 
@@ -109,18 +117,35 @@ if (!class_exists('\\Bil24\\Plugin')) {
     // Try to load classes manually
     $includes_dir = BIL24_CONNECTOR_PLUGIN_DIR . 'includes/';
     
-    // Load in dependency order
+    // Use a case-insensitive file lookup because some hosting providers
+    // (especially those running on Linux) treat path case strictly, while
+    // Windows development environments do not. This often leads to
+    // situations where the folder is called "admin" on the server but
+    // "Admin" locally (or vice-versa). We therefore try both the original
+    // path and a lower-case variant.
+
     $required_files = [
-        'Constants.php' => '\\Bil24\\Constants',
-        'Utils.php' => '\\Bil24\\Utils',
-        'Api/Client.php' => '\\Bil24\\Api\\Client',
-        'Admin/SettingsPage.php' => '\\Bil24\\Admin\\SettingsPage',
-        'Plugin.php' => '\\Bil24\\Plugin'
+        'Constants.php'           => '\\Bil24\\Constants',
+        'Utils.php'               => '\\Bil24\\Utils',
+        'Api/Client.php'          => '\\Bil24\\Api\\Client',
+        'Admin/SettingsPage.php'  => '\\Bil24\\Admin\\SettingsPage',
+        // fallback lower-case path – will be skipped if the canonical one exists
+        'admin/SettingsPage.php'  => '\\Bil24\\Admin\\SettingsPage',
+        'Plugin.php'              => '\\Bil24\\Plugin',
     ];
     
     foreach ($required_files as $file => $class) {
         $full_path = $includes_dir . $file;
-        if (file_exists($full_path) && !class_exists($class)) {
+
+        // If the exact path doesn't exist, try a case-insensitive glob
+        if (! file_exists($full_path)) {
+            $glob = glob($includes_dir . str_ireplace('Admin', '*', $file));
+            if ($glob) {
+                $full_path = reset($glob);
+            }
+        }
+
+        if (file_exists($full_path) && ! class_exists($class)) {
             require_once $full_path;
         }
     }
