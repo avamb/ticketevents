@@ -104,6 +104,38 @@ if (file_exists($autoloader)) {
     return;
 }
 
+// Fallback class loading if autoloader doesn't work
+if (!class_exists('\\Bil24\\Plugin')) {
+    // Try to load classes manually
+    $includes_dir = BIL24_CONNECTOR_PLUGIN_DIR . 'includes/';
+    
+    // Load in dependency order
+    $required_files = [
+        'Constants.php' => '\\Bil24\\Constants',
+        'Utils.php' => '\\Bil24\\Utils',
+        'Api/Client.php' => '\\Bil24\\Api\\Client',
+        'Admin/SettingsPage.php' => '\\Bil24\\Admin\\SettingsPage',
+        'Plugin.php' => '\\Bil24\\Plugin'
+    ];
+    
+    foreach ($required_files as $file => $class) {
+        $full_path = $includes_dir . $file;
+        if (file_exists($full_path) && !class_exists($class)) {
+            require_once $full_path;
+        }
+    }
+    
+    // If still not loaded, show error
+    if (!class_exists('\\Bil24\\Plugin')) {
+        add_action('admin_notices', function () {
+            echo '<div class="notice notice-error"><p>';
+            echo esc_html__('Bil24 Connector: Plugin classes could not be loaded. Please check plugin installation.', 'bil24');
+            echo '</p></div>';
+        });
+        return;
+    }
+}
+
 // Fire up the plugin core
 if (class_exists('\\Bil24\\Plugin')) {
     add_action('plugins_loaded', [ '\\Bil24\\Plugin', 'instance' ]);

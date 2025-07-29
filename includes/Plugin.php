@@ -54,7 +54,7 @@ final class Plugin {
         
         // Admin hooks
         if ( is_admin() ) {
-            add_action( 'admin_init', [ $this, 'admin_init' ] );
+            add_action( 'admin_menu', [ $this, 'admin_menu' ] );
             add_action( 'admin_notices', [ $this, 'admin_notices' ] );
             add_filter( 'plugin_action_links_' . BIL24_CONNECTOR_PLUGIN_BASENAME, [ $this, 'plugin_action_links' ] );
         }
@@ -145,9 +145,9 @@ final class Plugin {
     }
 
     /**
-     * Initialize admin area
+     * Initialize admin menu and settings page
      */
-    public function admin_init(): void {
+    public function admin_menu(): void {
         // Load required dependencies first
         $this->load_admin_classes();
         
