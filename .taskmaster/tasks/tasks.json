@@ -443,11 +443,25 @@
         ],
         "status": "pending",
         "subtasks": []
+      },
+      {
+        "id": 16,
+        "title": "Fix Case-Sensitive Path Issue in Settings Page",
+        "description": "Implement a case-insensitive fallback mechanism for loading paths to resolve the Settings Page loading failure caused by path case sensitivity (Admin vs admin).",
+        "details": "Implement a robust solution to address the case-sensitive path issue with the following steps:\n\n1. Identify all locations where path references are made to the Settings Page components:\n   - Review file inclusion statements (require, include, require_once)\n   - Check asset loading paths (CSS, JavaScript)\n   - Examine template loading mechanisms\n\n2. Implement a case-insensitive path resolver utility:\n   ```php\n   /**\n    * Attempts to load a file with case-insensitive fallback\n    * \n    * @param string $path The original path to load\n    * @return string|false The resolved path or false if not found\n    */\n   function bil24_resolve_path($path) {\n       // Try direct path first for performance\n       if (file_exists($path)) {\n           return $path;\n       }\n       \n       // Try case-insensitive fallback\n       $directory = dirname($path);\n       $filename = basename($path);\n       \n       if (!is_dir($directory)) {\n           return false;\n       }\n       \n       $directory_files = scandir($directory);\n       foreach ($directory_files as $file) {\n           if (strtolower($file) === strtolower($filename)) {\n               return $directory . '/' . $file;\n           }\n       }\n       \n       return false;\n   }\n   ```\n\n3. Replace direct file references with the new resolver:\n   - Update require/include statements to use the resolver\n   - Modify asset enqueuing to use resolved paths\n   - Update template loading mechanisms\n\n4. Add path normalization for consistency:\n   - Convert all path references to lowercase during development\n   - Implement path normalization in the build process\n   - Add documentation about path case sensitivity\n\n5. Add logging for path resolution failures:\n   - Log when fallback mechanism is triggered\n   - Track frequency of case sensitivity issues\n   - Create alerts for persistent path problems\n\n6. Update deployment process:\n   - Ensure file paths maintain consistent casing during deployment\n   - Add verification step to check for case mismatches",
+        "testStrategy": "1. Create a comprehensive test suite to verify the path resolution fix:\n   - Unit test the bil24_resolve_path() function with various path scenarios\n   - Test with uppercase, lowercase, and mixed case paths\n   - Verify behavior with non-existent files and directories\n   - Test performance impact of path resolution\n\n2. Implement integration tests:\n   - Test the Settings Page loading in various environments\n   - Verify all assets load correctly with different path cases\n   - Test on case-sensitive file systems (Linux) and case-insensitive systems (Windows)\n   - Verify behavior in production-like environments\n\n3. Manual testing checklist:\n   - Navigate to the Settings Page through different routes\n   - Verify all UI components load correctly\n   - Check browser console for any 404 errors\n   - Test with different user roles and permissions\n\n4. Performance testing:\n   - Measure load time impact of the fallback mechanism\n   - Profile the path resolution function under load\n   - Verify caching mechanisms work correctly with resolved paths\n\n5. Deployment verification:\n   - Create a deployment checklist for path verification\n   - Test the fix in staging environment before production\n   - Monitor error logs after deployment for any path-related issues",
+        "status": "done",
+        "dependencies": [
+          3,
+          5
+        ],
+        "priority": "medium",
+        "subtasks": []
       }
     ],
     "metadata": {
       "created": "2025-07-28T17:40:45.790Z",
-      "updated": "2025-07-28T21:08:34.431Z",
+      "updated": "2025-07-29T21:07:37.585Z",
       "description": "Tasks for master context"
     }
   }
