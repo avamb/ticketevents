@@ -88,7 +88,38 @@ final class Plugin {
             error_log( '[Bil24] SettingsPage class exists: ' . ( class_exists( '\\Bil24\\Admin\\SettingsPage' ) ? 'YES' : 'NO' ) );
         }
         
-        // Initialize settings page only once
+        // Проверяем параметр URL для включения тестовой версии
+        $use_test_version = isset( $_GET['bil24_test'] ) && $_GET['bil24_test'] === '1';
+        
+        if ( $use_test_version ) {
+            // Загружаем тестовую версию
+            $test_settings_file = __DIR__ . '/Admin/SettingsPage-NO-CAPS-CHECK.php';
+            if ( file_exists( $test_settings_file ) ) {
+                require_once $test_settings_file;
+                
+                if ( class_exists( '\\Bil24\\Admin\\SettingsPageNoCapsCheck' ) ) {
+                    $test_settings_page = new \Bil24\Admin\SettingsPageNoCapsCheck();
+                    $test_settings_page->register();
+                    
+                    if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                        error_log( '[Bil24] TEST SettingsPage registered (no caps check)' );
+                    }
+                    
+                    // Показываем уведомление о тестовом режиме
+                    add_action( 'admin_notices', function() {
+                        echo '<div class="notice notice-warning">';
+                        echo '<p><strong>Bil24 Connector:</strong> Активирован тестовый режим БЕЗ проверки прав. ';
+                        echo 'Перейдите в Настройки → Bil24 Connector (TEST). ';
+                        echo '<a href="' . admin_url( 'admin.php' ) . '">Отключить тестовый режим</a></p>';
+                        echo '</div>';
+                    });
+                    
+                    return; // Не загружаем обычную версию
+                }
+            }
+        }
+        
+        // Initialize settings page only once (обычная версия)
         if ( ! $this->settings_page && class_exists( '\\Bil24\\Admin\\SettingsPage' ) ) {
             try {
                 $this->settings_page = new \Bil24\Admin\SettingsPage();
@@ -105,10 +136,12 @@ final class Plugin {
                     error_log( '[Bil24] SettingsPage registration failed: ' . $e->getMessage() );
                 }
                 
-                // Показываем ошибку в админке
+                // Показываем ошибку в админке с ссылкой на тестовый режим
                 add_action( 'admin_notices', function() use ( $e ) {
                     echo '<div class="notice notice-error"><p>';
                     echo '<strong>Bil24 Connector Error:</strong> ' . esc_html( $e->getMessage() );
+                    echo '<br><br><a href="' . admin_url( 'admin.php?bil24_test=1' ) . '" class="button">';
+                    echo 'Запустить тестовый режим (без проверки прав)</a>';
                     echo '</p></div>';
                 });
             }
@@ -117,10 +150,22 @@ final class Plugin {
                 error_log( '[Bil24] SettingsPage class not found - attempting manual load' );
             }
             
-            // Показываем ошибку в админке
+            // Показываем ошибку в админке с ссылкой на тестовый режим
             add_action( 'admin_notices', function() {
                 echo '<div class="notice notice-error"><p>';
                 echo '<strong>Bil24 Connector Error:</strong> Settings page class could not be loaded. Please check plugin installation.';
+                echo '<br><br><a href="' . admin_url( 'admin.php?bil24_test=1' ) . '" class="button">';
+                echo 'Запустить тестовый режим (диагностика)</a>';
+                echo '</p></div>';
+            });
+        }
+        
+        // Добавляем ссылку на тестовый режим в любом случае (для диагностики)
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG && current_user_can( 'activate_plugins' ) ) {
+            add_action( 'admin_notices', function() {
+                echo '<div class="notice notice-info" style="border-left-color: #007cba;"><p>';
+                echo '<strong>Bil24 Connector Debug:</strong> ';
+                echo '<a href="' . admin_url( 'admin.php?bil24_test=1' ) . '">Запустить диагностику прав доступа</a>';
                 echo '</p></div>';
             });
         }
@@ -161,6 +206,16 @@ final class Plugin {
             'Api/Client.php' => '\\Bil24\\Api\\Client',
             'Api/Endpoints.php' => '\\Bil24\\Api\\Endpoints'
         ];
+        
+        // Если активирован тестовый режим, добавляем тестовый файл
+        $use_test_version = isset( $_GET['bil24_test'] ) && $_GET['bil24_test'] === '1';
+        if ( $use_test_version ) {
+            $files_to_load['Admin/SettingsPage-NO-CAPS-CHECK.php'] = '\\Bil24\\Admin\\SettingsPageNoCapsCheck';
+            
+            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                error_log( '[Bil24] Test mode activated - will load SettingsPageNoCapsCheck' );
+            }
+        }
         
         foreach ( $files_to_load as $file => $class ) {
             if ( ! class_exists( $class ) ) {
