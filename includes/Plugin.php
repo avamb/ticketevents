@@ -22,6 +22,11 @@ final class Plugin {
     private bool $initialized = false;
 
     /**
+     * Settings page instance
+     */
+    private ?\Bil24\Admin\SettingsPage $settings_page = null;
+
+    /**
      * Get plugin instance (Singleton pattern)
      */
     public static function instance(): Plugin {
@@ -50,10 +55,8 @@ final class Plugin {
         // Admin hooks
         if ( is_admin() ) {
             add_action( 'admin_init', [ $this, 'admin_init' ] );
-            add_action( 'admin_menu', [ $this, 'admin_menu' ] );
             add_action( 'admin_notices', [ $this, 'admin_notices' ] );
             add_filter( 'plugin_action_links_' . BIL24_CONNECTOR_PLUGIN_BASENAME, [ $this, 'plugin_action_links' ] );
-            add_action( 'wp_ajax_bil24_test_connection', [ $this, 'ajax_test_connection' ] );
         }
 
         $this->initialized = true;
@@ -145,30 +148,14 @@ final class Plugin {
      * Initialize admin area
      */
     public function admin_init(): void {
-        // Загружаем необходимые классы
+        // Load required dependencies first
         $this->load_admin_classes();
         
-        // Инициализируем страницу настроек
-        if ( class_exists( '\\Bil24\\Admin\\SettingsPage' ) ) {
-            $settings_page = new \Bil24\Admin\SettingsPage();
-            $settings_page->register();
+        // Initialize settings page only once
+        if ( ! $this->settings_page && class_exists( '\\Bil24\\Admin\\SettingsPage' ) ) {
+            $this->settings_page = new \Bil24\Admin\SettingsPage();
+            $this->settings_page->register();
         }
-    }
-    
-    /**
-     * Initialize admin menu - оставляем только для добавления главного меню
-     */
-    public function admin_menu(): void {
-        // Добавляем в главное меню для лучшей видимости
-        add_menu_page(
-            __( 'Bil24 Connector', 'bil24' ),
-            __( 'Bil24', 'bil24' ),
-            'manage_options',
-            'bil24-main',
-            [ $this, 'render_settings_page' ],
-            'dashicons-tickets-alt',
-            30
-        );
     }
     
     /**
@@ -191,81 +178,45 @@ final class Plugin {
      */
     private function load_admin_classes(): void {
         // Load required dependencies first
-        $utils_file = __DIR__ . '/Utils.php';
+        $includes_dir = __DIR__;
+        
+        // Load Utils
+        $utils_file = $includes_dir . '/Utils.php';
         if ( file_exists( $utils_file ) && ! class_exists( '\\Bil24\\Utils' ) ) {
             require_once $utils_file;
         }
         
-        $constants_file = __DIR__ . '/Constants.php';
+        // Load Constants
+        $constants_file = $includes_dir . '/Constants.php';
         if ( file_exists( $constants_file ) && ! class_exists( '\\Bil24\\Constants' ) ) {
             require_once $constants_file;
         }
         
         // Load SettingsPage
-        $settings_file = __DIR__ . '/Admin/SettingsPage.php';
+        $settings_file = $includes_dir . '/Admin/SettingsPage.php';
         if ( file_exists( $settings_file ) && ! class_exists( '\\Bil24\\Admin\\SettingsPage' ) ) {
             require_once $settings_file;
         }
-    }
-    
-    /**
-     * Render settings page
-     */
-    public function render_settings_page(): void {
-        // Загружаем необходимые классы
-        $this->load_admin_classes();
         
-        if ( class_exists( '\\Bil24\\Admin\\SettingsPage' ) ) {
-            $settings_page = new \Bil24\Admin\SettingsPage();
-            $settings_page->render_page();
-        } else {
-            // Простое сообщение об ошибке
-            echo '<div class="wrap">';
-            echo '<h1>' . esc_html__( 'Bil24 Connector', 'bil24' ) . '</h1>';
-            echo '<div class="notice notice-error"><p>';
-            echo esc_html__( 'Settings page could not be loaded. Please check if the plugin is properly installed.', 'bil24' );
-            echo '</p></div>';
-            echo '</div>';
+        // Load API Client
+        $api_client_file = $includes_dir . '/Api/Client.php';
+        if ( file_exists( $api_client_file ) && ! class_exists( '\\Bil24\\Api\\Client' ) ) {
+            require_once $api_client_file;
         }
-    }
-    
-    /**
-     * AJAX handler for connection testing
-     */
-    public function ajax_test_connection(): void {
-        check_ajax_referer( 'bil24_test_connection' );
         
-        if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( __( 'Insufficient permissions', 'bil24' ) );
+        // Load API Endpoints
+        $api_endpoints_file = $includes_dir . '/Api/Endpoints.php';
+        if ( file_exists( $api_endpoints_file ) && ! class_exists( '\\Bil24\\Api\\Endpoints' ) ) {
+            require_once $api_endpoints_file;
         }
-
-        try {
-            if ( class_exists( '\\Bil24\\Api\\Client' ) ) {
-                $api = new \Bil24\Api\Client();
-                $connected = $api->test_connection();
-                
-                if ( $connected ) {
-                    wp_send_json_success( [
-                        'message' => __( 'Connection to Bil24 API established successfully!', 'bil24' )
-                    ] );
-                } else {
-                    wp_send_json_error( [
-                        'message' => __( 'Failed to connect to Bil24 API. Please check your settings.', 'bil24' )
-                    ] );
-                }
-            } else {
-                wp_send_json_error( [
-                    'message' => __( 'API Client class not found.', 'bil24' )
-                ] );
-            }
-        } catch ( \Exception $e ) {
-            wp_send_json_error( [
-                'message' => sprintf( 
-                    /* translators: %s: error message */
-                    __( 'Connection error: %s', 'bil24' ), 
-                    $e->getMessage() 
-                )
-            ] );
+        
+        // Debug logging
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+            error_log( '[Bil24] Admin classes loading status:' );
+            error_log( '  - Utils: ' . ( class_exists( '\\Bil24\\Utils' ) ? 'OK' : 'FAILED' ) );
+            error_log( '  - Constants: ' . ( class_exists( '\\Bil24\\Constants' ) ? 'OK' : 'FAILED' ) );
+            error_log( '  - SettingsPage: ' . ( class_exists( '\\Bil24\\Admin\\SettingsPage' ) ? 'OK' : 'FAILED' ) );
+            error_log( '  - API Client: ' . ( class_exists( '\\Bil24\\Api\\Client' ) ? 'OK' : 'FAILED' ) );
         }
     }
 
@@ -304,7 +255,7 @@ final class Plugin {
             'public' => true,
             'publicly_queryable' => true,
             'show_ui' => true,
-            'show_in_menu' => 'bil24-settings',
+            'show_in_menu' => false, // Will be added to Bil24 submenu
             'show_in_admin_bar' => false,
             'show_in_nav_menus' => true,
             'show_in_rest' => true,
@@ -351,7 +302,7 @@ final class Plugin {
             'description' => __( 'Sessions imported from Bil24 platform', 'bil24' ),
             'public' => false,
             'show_ui' => true,
-            'show_in_menu' => 'bil24-settings',
+            'show_in_menu' => false, // Will be added to Bil24 submenu
             'show_in_admin_bar' => false,
             'show_in_nav_menus' => false,
             'show_in_rest' => true,
@@ -456,7 +407,7 @@ final class Plugin {
         
         // Не показываем уведомление на самой странице настроек
         $screen = get_current_screen();
-        if ( $screen && ( $screen->id === 'settings_page_bil24-connector' || $screen->id === 'toplevel_page_bil24-main' ) ) {
+        if ( $screen && ( $screen->id === 'settings_page_bil24-connector' ) ) {
             return;
         }
         
@@ -476,7 +427,7 @@ final class Plugin {
                 echo '<div class="notice notice-warning is-dismissible">';
                 echo '<p><strong>' . esc_html__( 'Bil24 Connector', 'bil24' ) . ':</strong> ';
                 echo esc_html__( 'Plugin requires configuration to work properly.', 'bil24' );
-                echo ' <a href="' . esc_url( admin_url( 'admin.php?page=bil24-main' ) ) . '">';
+                echo ' <a href="' . esc_url( admin_url( 'options-general.php?page=bil24-connector' ) ) . '">';
                 echo esc_html__( 'Configure now', 'bil24' );
                 echo '</a></p>';
                 echo '</div>';
