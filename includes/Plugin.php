@@ -50,6 +50,8 @@ final class Plugin {
         // Admin hooks
         if ( is_admin() ) {
             add_action( 'admin_init', [ $this, 'admin_init' ] );
+            // Принудительное добавление меню на раннем этапе
+            add_action( 'admin_menu', [ $this, 'force_add_menu' ], 1 );
         }
 
         $this->initialized = true;
@@ -144,6 +146,37 @@ final class Plugin {
         // Initialize admin settings page
         if ( class_exists( '\\Bil24\\Admin\\SettingsPage' ) ) {
             ( new \Bil24\Admin\SettingsPage() )->register();
+        }
+        
+
+    }
+    
+    /**
+     * Принудительное добавление меню на раннем этапе
+     */
+    public function force_add_menu(): void {
+        // Логируем попытку
+        Utils::log( 'Попытка принудительного добавления меню', Constants::LOG_LEVEL_DEBUG );
+        
+        // Добавляем меню напрямую
+        add_options_page(
+            __( 'Bil24 Connector Settings', 'bil24' ),
+            __( 'Bil24 Connector', 'bil24' ),
+            'manage_options',
+            'bil24-connector',
+            [ $this, 'render_settings_page' ]
+        );
+    }
+    
+    /**
+     * Рендер страницы настроек (fallback)
+     */
+    public function render_settings_page(): void {
+        if ( class_exists( '\\Bil24\\Admin\\SettingsPage' ) ) {
+            $settings_page = new \Bil24\Admin\SettingsPage();
+            $settings_page->render_page();
+        } else {
+            echo '<div class="wrap"><h1>Bil24 Connector</h1><p>Ошибка: Класс SettingsPage не найден.</p></div>';
         }
     }
 
