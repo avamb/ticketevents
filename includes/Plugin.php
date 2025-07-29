@@ -52,9 +52,10 @@ final class Plugin {
         // WordPress init hook
         add_action( 'init', [ $this, 'init' ] );
         
-        // Admin hooks
+        // Admin hooks - use admin_menu instead of admin_init for menu registration
         if ( is_admin() ) {
-            add_action( 'admin_menu', [ $this, 'admin_menu' ] );
+            // Register settings page on admin_menu hook (correct timing)
+            add_action( 'admin_menu', [ $this, 'register_admin_menu' ] );
             add_action( 'admin_notices', [ $this, 'admin_notices' ] );
             add_filter( 'plugin_action_links_' . BIL24_CONNECTOR_PLUGIN_BASENAME, [ $this, 'plugin_action_links' ] );
         }
@@ -63,91 +64,9 @@ final class Plugin {
     }
 
     /**
-     * Plugin activation hook
+     * Register admin menu and settings page
      */
-    public static function activate(): void {
-        // Check requirements
-        if ( ! self::check_requirements() ) {
-            return;
-        }
-
-        // Create database tables if needed
-        self::create_database_tables();
-        
-        // Set default options
-        self::set_default_options();
-        
-        // Schedule cron events
-        self::schedule_cron_events();
-        
-        // Flush rewrite rules
-        flush_rewrite_rules();
-        
-        // Update activation option
-        update_option( 'bil24_activated', time() );
-        
-        Utils::log( 'Plugin activated successfully', Constants::LOG_LEVEL_INFO );
-    }
-
-    /**
-     * Plugin deactivation hook
-     */
-    public static function deactivate(): void {
-        // Clear scheduled cron events
-        self::clear_cron_events();
-        
-        // Flush rewrite rules
-        flush_rewrite_rules();
-        
-        // Update deactivation option
-        update_option( 'bil24_deactivated', time() );
-        
-        Utils::log( 'Plugin deactivated', Constants::LOG_LEVEL_INFO );
-    }
-
-    /**
-     * Plugin uninstall hook (static method for register_uninstall_hook)
-     */
-    public static function uninstall(): void {
-        // Remove plugin options
-        delete_option( Constants::OPTION_SETTINGS );
-        delete_option( Constants::OPTION_API_CREDENTIALS );
-        delete_option( Constants::OPTION_SYNC_STATUS );
-        delete_option( Constants::OPTION_DB_VERSION );
-        delete_option( 'bil24_activated' );
-        delete_option( 'bil24_deactivated' );
-        
-        // Drop database tables if needed
-        // self::drop_database_tables();
-        
-        Utils::log( 'Plugin uninstalled', Constants::LOG_LEVEL_INFO );
-    }
-
-    /**
-     * Initialize plugin
-     */
-    public function init(): void {
-        // Load text domain
-        load_plugin_textdomain( 
-            Constants::TEXT_DOMAIN, 
-            false, 
-            dirname( Constants::PLUGIN_BASENAME ) . '/languages' 
-        );
-        
-        // Register custom post types
-        $this->register_post_types();
-        
-        // Initialize REST API
-        $this->init_rest_api();
-        
-        // Initialize integrations
-        $this->init_integrations();
-    }
-
-    /**
-     * Initialize admin menu and settings page
-     */
-    public function admin_menu(): void {
+    public function register_admin_menu(): void {
         // Load required dependencies first
         $this->load_admin_classes();
         
@@ -155,6 +74,9 @@ final class Plugin {
         if ( ! $this->settings_page && class_exists( '\\Bil24\\Admin\\SettingsPage' ) ) {
             $this->settings_page = new \Bil24\Admin\SettingsPage();
             $this->settings_page->register();
+            
+            // Add AJAX handler for connection testing
+            add_action( 'wp_ajax_bil24_test_connection', [ $this->settings_page, 'ajax_test_connection' ] );
         }
     }
     
