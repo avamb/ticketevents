@@ -463,6 +463,12 @@ final class Plugin {
         $this->load_admin_classes();
         
         try {
+            // Проверяем, что API классы загружены
+            if (!class_exists('\\Bil24\\Api\\Client')) {
+                error_log('Bil24 Connector: API Client class not found. Autoloader may not be working properly.');
+                return;
+            }
+            
             $api = new \Bil24\Api\Client();
             $status = $api->get_config_status();
             
@@ -477,6 +483,7 @@ final class Plugin {
             }
         } catch ( \Exception $e ) {
             // Ошибки игнорируем, чтобы не спамить админку
+            error_log('Bil24 Connector API error: ' . $e->getMessage());
         }
     }
 

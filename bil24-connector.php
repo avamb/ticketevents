@@ -104,12 +104,16 @@ if (file_exists($autoloader)) {
     return;
 }
 
-// Include the main plugin file
-require_once BIL24_CONNECTOR_PLUGIN_DIR . 'includes/Plugin.php';
-
 // Fire up the plugin core
 if (class_exists('\\Bil24\\Plugin')) {
     add_action('plugins_loaded', [ '\\Bil24\\Plugin', 'instance' ]);
+} else {
+    add_action('admin_notices', function () {
+        echo '<div class="notice notice-error"><p>';
+        echo esc_html__('Bil24 Connector: Plugin class not found. Please check plugin installation.', 'bil24');
+        echo '</p></div>';
+    });
+    return;
 }
 
 // Register activation and deactivation hooks

@@ -25,13 +25,6 @@ return array(
     'Bil24\\Models\\Ticket' => $baseDir . '/includes/Models/Ticket.php',
     'Bil24\\Models\\Venue' => $baseDir . '/includes/Models/Venue.php',
     'Bil24\\Plugin' => $baseDir . '/includes/Plugin.php',
-    'Bil24\\Tests\\Integration\\PluginTest' => $baseDir . '/tests/Integration/PluginTest.php',
-    'Bil24\\Tests\\Unit\\Api\\ClientTest' => $baseDir . '/tests/Unit/Api/ClientTest.php',
-    'Bil24\\Tests\\Unit\\Api\\EndpointsTest' => $baseDir . '/tests/Unit/Api/EndpointsTest.php',
-    'Bil24\\Tests\\Unit\\Models\\EventTest' => $baseDir . '/tests/Unit/Models/EventTest.php',
-    'Bil24\\Tests\\Unit\\Models\\OrderTest' => $baseDir . '/tests/Unit/Models/OrderTest.php',
-    'Bil24\\Tests\\Unit\\Models\\SessionTest' => $baseDir . '/tests/Unit/Models/SessionTest.php',
-    'Bil24\\Tests\\Unit\\UtilsTest' => $baseDir . '/tests/Unit/UtilsTest.php',
     'Bil24\\Utils' => $baseDir . '/includes/Utils.php',
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
 );

@@ -6,6 +6,5 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Bil24\\Tests\\' => array($baseDir . '/tests'),
     'Bil24\\' => array($baseDir . '/includes'),
 );
