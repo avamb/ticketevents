@@ -38,9 +38,17 @@ class Client {
      * Constructor
      */
     public function __construct() {
-        $this->settings = get_option( 'bil24_settings', [] );
+        $this->settings = get_option( Constants::OPTION_SETTINGS, [
+            'fid' => '',
+            'token' => '',
+            'env' => 'test'
+        ] );
+        
+        // Получаем timeout из настроек или используем дефолтный
+        $timeout = $this->settings['api_timeout'] ?? Constants::API_TIMEOUT;
+        
         $this->http_args = [
-            'timeout' => Constants::API_TIMEOUT,
+            'timeout' => $timeout,
             'headers' => [
                 'Content-Type' => 'application/json',
                 'User-Agent' => 'Bil24-WordPress-Connector/' . Constants::get_version(),
@@ -232,5 +240,32 @@ class Client {
     public function clear_cache(): void {
         wp_cache_flush_group( Constants::CACHE_GROUP );
         Utils::log( 'API cache cleared', Constants::LOG_LEVEL_INFO );
+    }
+
+    /**
+     * Check if API credentials are configured
+     */
+    public function is_configured(): bool {
+        $fid = $this->settings['fid'] ?? '';
+        $token = $this->settings['token'] ?? '';
+        
+        return !empty($fid) && !empty($token);
+    }
+    
+    /**
+     * Get configuration status
+     */
+    public function get_config_status(): array {
+        $fid = $this->settings['fid'] ?? '';
+        $token = $this->settings['token'] ?? '';
+        $env = $this->settings['env'] ?? 'test';
+        
+        return [
+            'configured' => $this->is_configured(),
+            'has_fid' => !empty($fid),
+            'has_token' => !empty($token),
+            'environment' => $env,
+            'api_url' => $this->get_api_base_url()
+        ];
     }
 } 

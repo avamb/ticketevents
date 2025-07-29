@@ -139,14 +139,55 @@ if (!class_exists('\\Bil24\\Plugin')) {
 // Fire up the plugin core
 if (class_exists('\\Bil24\\Plugin')) {
     add_action('plugins_loaded', function() {
-        \Bil24\Plugin::instance();
+        // Отладочная информация
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            error_log('[Bil24] Initializing plugin on plugins_loaded hook');
+        }
+        
+        try {
+            $plugin_instance = \Bil24\Plugin::instance();
+            
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log('[Bil24] Plugin instance created successfully');
+            }
+        } catch (Exception $e) {
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log('[Bil24] Plugin initialization failed: ' . $e->getMessage());
+            }
+            
+            add_action('admin_notices', function() use ($e) {
+                echo '<div class="notice notice-error"><p>';
+                echo '<strong>Bil24 Connector:</strong> Failed to initialize - ' . esc_html($e->getMessage());
+                echo '</p></div>';
+            });
+        }
     });
 } else {
+    // Более подробное сообщение об ошибке
     add_action('admin_notices', function () {
         echo '<div class="notice notice-error"><p>';
-        echo esc_html__('Bil24 Connector: Plugin class not found. Please check plugin installation.', 'bil24');
+        echo '<strong>Bil24 Connector:</strong> Plugin class not found. ';
+        
+        // Дополнительная диагностика
+        if (!file_exists(BIL24_CONNECTOR_PLUGIN_DIR . 'vendor/autoload.php')) {
+            echo 'Composer autoloader missing - run "composer install". ';
+        }
+        
+        if (!file_exists(BIL24_CONNECTOR_PLUGIN_DIR . 'includes/Plugin.php')) {
+            echo 'Plugin.php file missing. ';
+        }
+        
+        echo 'Please check plugin installation.';
         echo '</p></div>';
     });
+    
+    if (defined('WP_DEBUG') && WP_DEBUG) {
+        error_log('[Bil24] Plugin class not found - checking files:');
+        error_log('  - Plugin.php exists: ' . (file_exists(BIL24_CONNECTOR_PLUGIN_DIR . 'includes/Plugin.php') ? 'YES' : 'NO'));
+        error_log('  - Autoloader exists: ' . (file_exists(BIL24_CONNECTOR_PLUGIN_DIR . 'vendor/autoload.php') ? 'YES' : 'NO'));
+        error_log('  - Class exists: ' . (class_exists('\\Bil24\\Plugin') ? 'YES' : 'NO'));
+    }
+    
     return;
 }
 

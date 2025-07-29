@@ -52,31 +52,77 @@ final class Plugin {
         // WordPress init hook
         add_action( 'init', [ $this, 'init' ] );
         
-        // Admin hooks - use admin_menu instead of admin_init for menu registration
-        if ( is_admin() ) {
-            // Register settings page on admin_menu hook (correct timing)
-            add_action( 'admin_menu', [ $this, 'register_admin_menu' ] );
-            add_action( 'admin_notices', [ $this, 'admin_notices' ] );
+        // Admin hooks - УБИРАЕМ is_admin() проверку и добавляем хуки всегда
+        // WordPress сам определит когда их выполнять
+        add_action( 'admin_menu', [ $this, 'register_admin_menu' ] );
+        add_action( 'admin_notices', [ $this, 'admin_notices' ] );
+        
+        // Plugin action links - только если есть константа basename
+        if ( defined( 'BIL24_CONNECTOR_PLUGIN_BASENAME' ) ) {
             add_filter( 'plugin_action_links_' . BIL24_CONNECTOR_PLUGIN_BASENAME, [ $this, 'plugin_action_links' ] );
         }
 
         $this->initialized = true;
+        
+        // Добавляем отладочную информацию
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+            error_log( '[Bil24] Plugin hooks initialized successfully' );
+        }
     }
 
     /**
      * Register admin menu and settings page
      */
     public function register_admin_menu(): void {
+        // Отладочная информация
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+            error_log( '[Bil24] register_admin_menu called' );
+            error_log( '[Bil24] Current user can manage_options: ' . ( current_user_can( 'manage_options' ) ? 'YES' : 'NO' ) );
+        }
+        
         // Load required dependencies first
         $this->load_admin_classes();
         
+        // Проверяем что классы загружены
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+            error_log( '[Bil24] SettingsPage class exists: ' . ( class_exists( '\\Bil24\\Admin\\SettingsPage' ) ? 'YES' : 'NO' ) );
+        }
+        
         // Initialize settings page only once
         if ( ! $this->settings_page && class_exists( '\\Bil24\\Admin\\SettingsPage' ) ) {
-            $this->settings_page = new \Bil24\Admin\SettingsPage();
-            $this->settings_page->register();
+            try {
+                $this->settings_page = new \Bil24\Admin\SettingsPage();
+                $this->settings_page->register();
+                
+                // Add AJAX handler for connection testing
+                add_action( 'wp_ajax_bil24_test_connection', [ $this->settings_page, 'ajax_test_connection' ] );
+                
+                if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                    error_log( '[Bil24] SettingsPage registered successfully' );
+                }
+            } catch ( \Exception $e ) {
+                if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                    error_log( '[Bil24] SettingsPage registration failed: ' . $e->getMessage() );
+                }
+                
+                // Показываем ошибку в админке
+                add_action( 'admin_notices', function() use ( $e ) {
+                    echo '<div class="notice notice-error"><p>';
+                    echo '<strong>Bil24 Connector Error:</strong> ' . esc_html( $e->getMessage() );
+                    echo '</p></div>';
+                });
+            }
+        } elseif ( ! class_exists( '\\Bil24\\Admin\\SettingsPage' ) ) {
+            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                error_log( '[Bil24] SettingsPage class not found - attempting manual load' );
+            }
             
-            // Add AJAX handler for connection testing
-            add_action( 'wp_ajax_bil24_test_connection', [ $this->settings_page, 'ajax_test_connection' ] );
+            // Показываем ошибку в админке
+            add_action( 'admin_notices', function() {
+                echo '<div class="notice notice-error"><p>';
+                echo '<strong>Bil24 Connector Error:</strong> Settings page class could not be loaded. Please check plugin installation.';
+                echo '</p></div>';
+            });
         }
     }
     
@@ -102,43 +148,61 @@ final class Plugin {
         // Load required dependencies first
         $includes_dir = __DIR__;
         
-        // Load Utils
-        $utils_file = $includes_dir . '/Utils.php';
-        if ( file_exists( $utils_file ) && ! class_exists( '\\Bil24\\Utils' ) ) {
-            require_once $utils_file;
-        }
-        
-        // Load Constants
-        $constants_file = $includes_dir . '/Constants.php';
-        if ( file_exists( $constants_file ) && ! class_exists( '\\Bil24\\Constants' ) ) {
-            require_once $constants_file;
-        }
-        
-        // Load SettingsPage
-        $settings_file = $includes_dir . '/Admin/SettingsPage.php';
-        if ( file_exists( $settings_file ) && ! class_exists( '\\Bil24\\Admin\\SettingsPage' ) ) {
-            require_once $settings_file;
-        }
-        
-        // Load API Client
-        $api_client_file = $includes_dir . '/Api/Client.php';
-        if ( file_exists( $api_client_file ) && ! class_exists( '\\Bil24\\Api\\Client' ) ) {
-            require_once $api_client_file;
-        }
-        
-        // Load API Endpoints
-        $api_endpoints_file = $includes_dir . '/Api/Endpoints.php';
-        if ( file_exists( $api_endpoints_file ) && ! class_exists( '\\Bil24\\Api\\Endpoints' ) ) {
-            require_once $api_endpoints_file;
-        }
-        
-        // Debug logging
+        // Отладочная информация
         if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            error_log( '[Bil24] Admin classes loading status:' );
-            error_log( '  - Utils: ' . ( class_exists( '\\Bil24\\Utils' ) ? 'OK' : 'FAILED' ) );
-            error_log( '  - Constants: ' . ( class_exists( '\\Bil24\\Constants' ) ? 'OK' : 'FAILED' ) );
-            error_log( '  - SettingsPage: ' . ( class_exists( '\\Bil24\\Admin\\SettingsPage' ) ? 'OK' : 'FAILED' ) );
-            error_log( '  - API Client: ' . ( class_exists( '\\Bil24\\Api\\Client' ) ? 'OK' : 'FAILED' ) );
+            error_log( '[Bil24] Loading admin classes from: ' . $includes_dir );
+        }
+        
+        // Список файлов для загрузки в правильном порядке
+        $files_to_load = [
+            'Utils.php' => '\\Bil24\\Utils',
+            'Constants.php' => '\\Bil24\\Constants', 
+            'Admin/SettingsPage.php' => '\\Bil24\\Admin\\SettingsPage',
+            'Api/Client.php' => '\\Bil24\\Api\\Client',
+            'Api/Endpoints.php' => '\\Bil24\\Api\\Endpoints'
+        ];
+        
+        foreach ( $files_to_load as $file => $class ) {
+            if ( ! class_exists( $class ) ) {
+                $full_path = $includes_dir . '/' . $file;
+                
+                if ( file_exists( $full_path ) ) {
+                    try {
+                        require_once $full_path;
+                        
+                        if ( class_exists( $class ) ) {
+                            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                                error_log( "[Bil24] ✅ {$class} loaded from {$file}" );
+                            }
+                        } else {
+                            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                                error_log( "[Bil24] ❌ {$class} - file loaded but class not found" );
+                            }
+                        }
+                    } catch ( \Exception $e ) {
+                        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                            error_log( "[Bil24] ❌ Error loading {$class}: " . $e->getMessage() );
+                        }
+                    }
+                } else {
+                    if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                        error_log( "[Bil24] ❌ File not found: {$full_path}" );
+                    }
+                }
+            } else {
+                if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                    error_log( "[Bil24] ✅ {$class} already loaded" );
+                }
+            }
+        }
+        
+        // Финальная отчетность
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+            error_log( '[Bil24] Class loading summary:' );
+            foreach ( $files_to_load as $file => $class ) {
+                $status = class_exists( $class ) ? 'OK' : 'FAILED';
+                error_log( "  - {$class}: {$status}" );
+            }
         }
     }
 
