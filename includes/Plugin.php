@@ -361,6 +361,88 @@ final class Plugin {
     }
 
     /**
+     * Plugin activation hook
+     */
+    public static function activate(): void {
+        // Check requirements
+        if ( ! self::check_requirements() ) {
+            return;
+        }
+
+        // Create database tables if needed
+        self::create_database_tables();
+        
+        // Set default options
+        self::set_default_options();
+        
+        // Schedule cron events
+        self::schedule_cron_events();
+        
+        // Flush rewrite rules
+        flush_rewrite_rules();
+        
+        // Update activation option
+        update_option( 'bil24_activated', time() );
+        
+        Utils::log( 'Plugin activated successfully', Constants::LOG_LEVEL_INFO );
+    }
+
+    /**
+     * Plugin deactivation hook
+     */
+    public static function deactivate(): void {
+        // Clear scheduled cron events
+        self::clear_cron_events();
+        
+        // Flush rewrite rules
+        flush_rewrite_rules();
+        
+        // Update deactivation option
+        update_option( 'bil24_deactivated', time() );
+        
+        Utils::log( 'Plugin deactivated', Constants::LOG_LEVEL_INFO );
+    }
+
+    /**
+     * Plugin uninstall hook (static method for register_uninstall_hook)
+     */
+    public static function uninstall(): void {
+        // Remove plugin options
+        delete_option( Constants::OPTION_SETTINGS );
+        delete_option( Constants::OPTION_API_CREDENTIALS );
+        delete_option( Constants::OPTION_SYNC_STATUS );
+        delete_option( Constants::OPTION_DB_VERSION );
+        delete_option( 'bil24_activated' );
+        delete_option( 'bil24_deactivated' );
+        
+        // Drop database tables if needed
+        // self::drop_database_tables();
+        
+        Utils::log( 'Plugin uninstalled', Constants::LOG_LEVEL_INFO );
+    }
+
+    /**
+     * Initialize plugin
+     */
+    public function init(): void {
+        // Load text domain
+        load_plugin_textdomain( 
+            Constants::TEXT_DOMAIN, 
+            false, 
+            dirname( Constants::PLUGIN_BASENAME ) . '/languages' 
+        );
+        
+        // Register custom post types
+        $this->register_post_types();
+        
+        // Initialize REST API
+        $this->init_rest_api();
+        
+        // Initialize integrations
+        $this->init_integrations();
+    }
+
+    /**
      * Check plugin requirements
      */
     private static function check_requirements(): bool {

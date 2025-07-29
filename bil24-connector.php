@@ -138,7 +138,9 @@ if (!class_exists('\\Bil24\\Plugin')) {
 
 // Fire up the plugin core
 if (class_exists('\\Bil24\\Plugin')) {
-    add_action('plugins_loaded', [ '\\Bil24\\Plugin', 'instance' ]);
+    add_action('plugins_loaded', function() {
+        \Bil24\Plugin::instance();
+    });
 } else {
     add_action('admin_notices', function () {
         echo '<div class="notice notice-error"><p>';
