@@ -9,11 +9,16 @@ class ComposerStaticInit1717f8bce2502df8d568b48917c84912
     public static $prefixLengthsPsr4 = array (
         'B' => 
         array (
+            'Bil24\\Tests\\' => 12,
             'Bil24\\' => 6,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
+        'Bil24\\Tests\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/tests',
+        ),
         'Bil24\\' => 
         array (
             0 => __DIR__ . '/../..' . '/includes',
@@ -21,6 +26,33 @@ class ComposerStaticInit1717f8bce2502df8d568b48917c84912
     );
 
     public static $classMap = array (
+        'Bil24\\Api\\Client' => __DIR__ . '/../..' . '/includes/Api/Client.php',
+        'Bil24\\Api\\Endpoints' => __DIR__ . '/../..' . '/includes/Api/Endpoints.php',
+        'Bil24\\Constants' => __DIR__ . '/../..' . '/includes/Constants.php',
+        'Bil24\\Frontend\\EventDisplay' => __DIR__ . '/../..' . '/includes/Frontend/EventDisplay.php',
+        'Bil24\\Integrations\\EventSync' => __DIR__ . '/../..' . '/includes/Integrations/EventSync.php',
+        'Bil24\\Integrations\\OrderSync' => __DIR__ . '/../..' . '/includes/Integrations/OrderSync.php',
+        'Bil24\\Integrations\\SessionSync' => __DIR__ . '/../..' . '/includes/Integrations/SessionSync.php',
+        'Bil24\\Integrations\\WooCommerce\\CartIntegration' => __DIR__ . '/../..' . '/includes/Integrations/WooCommerce/CartIntegration.php',
+        'Bil24\\Integrations\\WooCommerce\\CustomerSync' => __DIR__ . '/../..' . '/includes/Integrations/WooCommerce/CustomerSync.php',
+        'Bil24\\Integrations\\WooCommerce\\Integration' => __DIR__ . '/../..' . '/includes/Integrations/WooCommerce/Integration.php',
+        'Bil24\\Integrations\\WooCommerce\\OrderSync' => __DIR__ . '/../..' . '/includes/Integrations/WooCommerce/OrderSync.php',
+        'Bil24\\Integrations\\WooCommerce\\ProductSync' => __DIR__ . '/../..' . '/includes/Integrations/WooCommerce/ProductSync.php',
+        'Bil24\\Models\\Event' => __DIR__ . '/../..' . '/includes/Models/Event.php',
+        'Bil24\\Models\\Order' => __DIR__ . '/../..' . '/includes/Models/Order.php',
+        'Bil24\\Models\\PriceCategory' => __DIR__ . '/../..' . '/includes/Models/PriceCategory.php',
+        'Bil24\\Models\\Session' => __DIR__ . '/../..' . '/includes/Models/Session.php',
+        'Bil24\\Models\\Ticket' => __DIR__ . '/../..' . '/includes/Models/Ticket.php',
+        'Bil24\\Models\\Venue' => __DIR__ . '/../..' . '/includes/Models/Venue.php',
+        'Bil24\\Plugin' => __DIR__ . '/../..' . '/includes/Plugin.php',
+        'Bil24\\Tests\\Integration\\PluginTest' => __DIR__ . '/../..' . '/tests/Integration/PluginTest.php',
+        'Bil24\\Tests\\Unit\\Api\\ClientTest' => __DIR__ . '/../..' . '/tests/Unit/Api/ClientTest.php',
+        'Bil24\\Tests\\Unit\\Api\\EndpointsTest' => __DIR__ . '/../..' . '/tests/Unit/Api/EndpointsTest.php',
+        'Bil24\\Tests\\Unit\\Models\\EventTest' => __DIR__ . '/../..' . '/tests/Unit/Models/EventTest.php',
+        'Bil24\\Tests\\Unit\\Models\\OrderTest' => __DIR__ . '/../..' . '/tests/Unit/Models/OrderTest.php',
+        'Bil24\\Tests\\Unit\\Models\\SessionTest' => __DIR__ . '/../..' . '/tests/Unit/Models/SessionTest.php',
+        'Bil24\\Tests\\Unit\\UtilsTest' => __DIR__ . '/../..' . '/tests/Unit/UtilsTest.php',
+        'Bil24\\Utils' => __DIR__ . '/../..' . '/includes/Utils.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
     );
 

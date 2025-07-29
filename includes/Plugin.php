@@ -144,6 +144,9 @@ final class Plugin {
      * Initialize admin area
      */
     public function admin_init(): void {
+        // Ensure SettingsPage class is loaded
+        $this->load_admin_classes();
+        
         // Register settings only (menu is handled in admin_menu hook)
         if ( class_exists( '\\Bil24\\Admin\\SettingsPage' ) ) {
             $settings_page = new \Bil24\Admin\SettingsPage();
@@ -155,6 +158,9 @@ final class Plugin {
      * Initialize admin menu
      */
     public function admin_menu(): void {
+        // Ensure SettingsPage class is loaded
+        $this->load_admin_classes();
+        
         // Добавляем страницу настроек в меню Настройки
         add_options_page(
             __( 'Bil24 Connector Settings', 'bil24' ),
@@ -192,14 +198,73 @@ final class Plugin {
     }
     
     /**
+     * Load admin classes manually if needed
+     */
+    private function load_admin_classes(): void {
+        // Load required dependencies first
+        $utils_file = __DIR__ . '/Utils.php';
+        if ( file_exists( $utils_file ) && ! class_exists( '\\Bil24\\Utils' ) ) {
+            require_once $utils_file;
+        }
+        
+        $constants_file = __DIR__ . '/Constants.php';
+        if ( file_exists( $constants_file ) && ! class_exists( '\\Bil24\\Constants' ) ) {
+            require_once $constants_file;
+        }
+        
+        // Load SettingsPage
+        $settings_file = __DIR__ . '/Admin/SettingsPage.php';
+        if ( file_exists( $settings_file ) && ! class_exists( '\\Bil24\\Admin\\SettingsPage' ) ) {
+            require_once $settings_file;
+        }
+    }
+    
+    /**
      * Render settings page
      */
     public function render_settings_page(): void {
+        // Ensure SettingsPage class is loaded
+        $this->load_admin_classes();
+        
         if ( class_exists( '\\Bil24\\Admin\\SettingsPage' ) ) {
             $settings_page = new \Bil24\Admin\SettingsPage();
             $settings_page->render_page();
         } else {
-            echo '<div class="wrap"><h1>Bil24 Connector</h1><p>Ошибка: Класс SettingsPage не найден.</p></div>';
+            // Fallback - показываем отладочную информацию
+            echo '<div class="wrap">';
+            echo '<h1>Bil24 Connector - Debug Info</h1>';
+            echo '<div class="notice notice-error"><p><strong>Ошибка:</strong> Класс SettingsPage не найден.</p></div>';
+            
+            echo '<h2>Отладочная информация:</h2>';
+            echo '<ul>';
+            echo '<li><strong>Файл SettingsPage:</strong> ' . ( file_exists( __DIR__ . '/Admin/SettingsPage.php' ) ? '✅ Найден' : '❌ Не найден' ) . '</li>';
+            echo '<li><strong>Автозагрузчик:</strong> ' . ( file_exists( BIL24_CONNECTOR_PLUGIN_DIR . 'vendor/autoload.php' ) ? '✅ Найден' : '❌ Не найден' ) . '</li>';
+            echo '<li><strong>Директория плагина:</strong> ' . BIL24_CONNECTOR_PLUGIN_DIR . '</li>';
+            echo '<li><strong>Включенные файлы:</strong></li>';
+            
+            $included_files = get_included_files();
+            foreach ( $included_files as $file ) {
+                if ( strpos( $file, 'bil24' ) !== false || strpos( $file, 'Bil24' ) !== false ) {
+                    echo '<li style="margin-left: 20px;">• ' . esc_html( $file ) . '</li>';
+                }
+            }
+            echo '</ul>';
+            
+            echo '<p><strong>Попытка прямой загрузки:</strong></p>';
+            $settings_file = __DIR__ . '/Admin/SettingsPage.php';
+            if ( file_exists( $settings_file ) ) {
+                require_once $settings_file;
+                if ( class_exists( '\\Bil24\\Admin\\SettingsPage' ) ) {
+                    echo '<div class="notice notice-success"><p>✅ Класс успешно загружен напрямую!</p></div>';
+                    $settings_page = new \Bil24\Admin\SettingsPage();
+                    $settings_page->render_page();
+                    return;
+                } else {
+                    echo '<div class="notice notice-error"><p>❌ Класс не загрузился даже после прямого подключения файла.</p></div>';
+                }
+            }
+            
+            echo '</div>';
         }
     }
     
