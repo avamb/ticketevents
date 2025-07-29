@@ -31,12 +31,7 @@ define('BIL24_CONNECTOR_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('BIL24_CONNECTOR_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('BIL24_CONNECTOR_PLUGIN_BASENAME', plugin_basename(__FILE__));
 
-// PSR‑4 autoloading via Composer (vendor/autoload.php)
-if (file_exists(__DIR__ . '/vendor/autoload.php')) {
-    require_once __DIR__ . '/vendor/autoload.php';
-}
-
-// Load plugin text domain for internationalization
+// Load plugin text domain
 add_action('plugins_loaded', 'bil24_connector_load_textdomain');
 
 /**
@@ -96,7 +91,23 @@ function bil24_connector_check_requirements(): bool
     return true;
 }
 
-// Fire up the plugin core.
+// Load Composer autoloader
+$autoloader = BIL24_CONNECTOR_PLUGIN_DIR . 'vendor/autoload.php';
+if (file_exists($autoloader)) {
+    require_once $autoloader;
+} else {
+    add_action('admin_notices', function () {
+        echo '<div class="notice notice-error"><p>';
+        echo esc_html__('Bil24 Connector: Composer autoloader not found. Please run "composer install" in the plugin directory.', 'bil24');
+        echo '</p></div>';
+    });
+    return;
+}
+
+// Include the main plugin file
+require_once BIL24_CONNECTOR_PLUGIN_DIR . 'includes/Plugin.php';
+
+// Fire up the plugin core
 if (class_exists('\\Bil24\\Plugin')) {
     add_action('plugins_loaded', [ '\\Bil24\\Plugin', 'instance' ]);
 }

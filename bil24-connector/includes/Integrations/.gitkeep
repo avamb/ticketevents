@@ -1,8 +1,0 @@
-# Integrations Directory
-
-This directory contains integration classes for the Bil24 Connector plugin.
-
-## Structure
-- `WooCommerce/` - WooCommerce integration classes
-- `WordPress/` - WordPress core integration classes
-- `ThirdParty/` - Third-party plugin integrations 

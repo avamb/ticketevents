@@ -1,9 +1,0 @@
-# Models Directory
-
-This directory contains data model classes for the Bil24 Connector plugin.
-
-## Structure
-- `Event.php` - Event data model
-- `Session.php` - Session data model  
-- `Order.php` - Order data model
-- `User.php` - User data model 
