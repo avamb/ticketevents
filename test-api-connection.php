@@ -31,8 +31,12 @@ if (!$wp_loaded) {
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-echo "<h1>🔌 Bil24 API Connection Test</h1>";
-echo "<p><em>Testing connection to Bil24 API with current plugin settings...</em></p>";
+echo "<h1>🔌 Bil24 API Connection Test (UPDATED)</h1>";
+echo "<p><em>Testing connection to Bil24 API with CORRECTED request format...</em></p>";
+echo "<div style='background: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; border-radius: 5px; margin: 10px 0;'>";
+echo "<strong>⚠️ ВАЖНО:</strong> API клиент был исправлен для использования правильного формата Bil24!<br>";
+echo "Теперь запросы отправляются в JSON формате с командами вместо REST endpoints.";
+echo "</div>";
 
 // Load plugin classes
 $plugin_dir = dirname(__FILE__);
@@ -125,6 +129,21 @@ try {
              (is_bool($value) ? ($value ? '✅ Yes' : '❌ No') : esc_html($value)) . "</td></tr>";
     }
     echo "</table>";
+    
+    echo "<h3>Expected Request Format (Bil24):</h3>";
+    echo "<div style='background: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; border-radius: 5px;'>";
+    echo "<strong>URL:</strong> " . $config['api_url'] . "<br>";
+    echo "<strong>Method:</strong> POST<br>";
+    echo "<strong>Headers:</strong> Content-Type: application/json<br>";
+    echo "<strong>Body:</strong><br>";
+    $example_request = [
+        'locale' => 'en',
+        'command' => 'GET_ALL_ACTIONS',
+        'fid' => (int)($fid ?? 0),
+        'token' => $token ?? 'your_token_here'
+    ];
+    echo "<pre>" . wp_json_encode($example_request, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . "</pre>";
+    echo "</div>";
     
     echo "<h3>Testing Connection...</h3>";
     
