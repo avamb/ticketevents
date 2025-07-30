@@ -52,6 +52,9 @@ final class Plugin {
         // WordPress init hook
         add_action( 'init', [ $this, 'init' ] );
         
+        // Fix jQuery Migrate warnings
+        add_action( 'wp_default_scripts', [ $this, 'disable_jquery_migrate' ] );
+        
         // Admin hooks - УБИРАЕМ is_admin() проверку и добавляем хуки всегда
         // WordPress сам определит когда их выполнять
         add_action( 'admin_menu', [ $this, 'register_admin_menu' ] );
@@ -647,6 +650,24 @@ final class Plugin {
         // Schedule cleanup
         if ( ! wp_next_scheduled( Constants::HOOK_CLEANUP_LOGS ) ) {
             wp_schedule_event( time() + 3600, Constants::CRON_CLEANUP_INTERVAL, Constants::HOOK_CLEANUP_LOGS );
+        }
+    }
+
+    /**
+     * Disable jQuery Migrate to prevent console warnings
+     * 
+     * @param \WP_Scripts $scripts Scripts object
+     */
+    public function disable_jquery_migrate( $scripts ): void {
+        if ( ! empty( $scripts->registered['jquery'] ) ) {
+            $scripts->registered['jquery']->deps = array_diff( 
+                $scripts->registered['jquery']->deps, 
+                [ 'jquery-migrate' ] 
+            );
+            
+            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                Utils::log( 'jQuery Migrate disabled to prevent console warnings', Constants::LOG_LEVEL_DEBUG );
+            }
         }
     }
 
