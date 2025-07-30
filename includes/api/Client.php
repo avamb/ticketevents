@@ -132,23 +132,64 @@ class Client {
      */
     private function handle_response( $response ): array {
         if ( is_wp_error( $response ) ) {
-            Utils::log( 'API request failed: ' . $response->get_error_message(), Constants::LOG_LEVEL_ERROR );
-            throw new \Exception( 'API request failed: ' . $response->get_error_message() );
+            $error_message = $response->get_error_message();
+            $error_code = $response->get_error_code();
+            
+            Utils::log( "WP Error - Code: {$error_code}, Message: {$error_message}", Constants::LOG_LEVEL_ERROR );
+            
+            // Более информативные сообщения об ошибках
+            if ($error_code === 'http_request_failed') {
+                throw new \Exception( __('Network connection failed. Please check your internet connection or API server status.', 'bil24') );
+            } elseif ($error_code === 'connect_timeout') {
+                throw new \Exception( __('Connection timeout. The API server may be unavailable.', 'bil24') );
+            } else {
+                throw new \Exception( "Network error: {$error_message}" );
+            }
         }
 
         $status_code = wp_remote_retrieve_response_code( $response );
         $body = wp_remote_retrieve_body( $response );
+        
+        // Логируем raw response для отладки
+        Utils::log( "API Response - Status: {$status_code}, Body length: " . strlen($body), Constants::LOG_LEVEL_DEBUG );
+        
+        if (empty($body)) {
+            Utils::log( 'Empty response body received', Constants::LOG_LEVEL_WARNING );
+            throw new \Exception( 'Empty response from API server' );
+        }
+        
         $data = json_decode( $body, true );
 
         if ( json_last_error() !== JSON_ERROR_NONE ) {
-            Utils::log( 'Invalid JSON response: ' . $body, Constants::LOG_LEVEL_ERROR );
-            throw new \Exception( 'Invalid JSON response from API' );
+            $json_error = json_last_error_msg();
+            Utils::log( "JSON decode error: {$json_error}. Raw body: " . substr($body, 0, 500), Constants::LOG_LEVEL_ERROR );
+            throw new \Exception( "Invalid JSON response from API: {$json_error}" );
         }
 
         if ( $status_code >= 400 ) {
-            $error_message = $data['message'] ?? 'Unknown API error';
-            Utils::log( "API error {$status_code}: {$error_message}", Constants::LOG_LEVEL_ERROR );
-            throw new \Exception( "API error ({$status_code}): {$error_message}" );
+            // Более детальная обработка ошибок
+            $error_message = $data['message'] ?? $data['error'] ?? 'Unknown API error';
+            $error_details = $data['details'] ?? '';
+            
+            $full_error = "API error ({$status_code}): {$error_message}";
+            if ($error_details) {
+                $full_error .= " - Details: {$error_details}";
+            }
+            
+            Utils::log( $full_error, Constants::LOG_LEVEL_ERROR );
+            
+            // Специфические коды ошибок
+            if ($status_code === 401) {
+                throw new \Exception( __('Authentication failed. Please check your FID and Token credentials.', 'bil24') );
+            } elseif ($status_code === 403) {
+                throw new \Exception( __('Access denied. Your credentials may not have sufficient permissions.', 'bil24') );
+            } elseif ($status_code === 404) {
+                throw new \Exception( __('API endpoint not found. Please check the API documentation.', 'bil24') );
+            } elseif ($status_code >= 500) {
+                throw new \Exception( __('API server error. Please try again later or contact support.', 'bil24') );
+            } else {
+                throw new \Exception( $full_error );
+            }
         }
 
         Utils::log( "API request successful: {$status_code}", Constants::LOG_LEVEL_DEBUG );
@@ -226,10 +267,58 @@ class Client {
      */
     public function test_connection(): bool {
         try {
-            $response = $this->get( '/status' );
-            return isset( $response['status'] ) && $response['status'] === 'ok';
+            // Проверяем настройки перед тестированием
+            if (!$this->is_configured()) {
+                Utils::log('Connection test failed: API credentials not configured', Constants::LOG_LEVEL_ERROR);
+                throw new \Exception(__('API credentials (FID and Token) are required', 'bil24'));
+            }
+            
+            // Пробуем несколько endpoints для тестирования подключения
+            $test_endpoints = [
+                '/status',      // Основной status endpoint
+                '/version',     // Version endpoint как альтернатива
+                '/events',      // Events endpoint с ограничением
+            ];
+            
+            $last_error = null;
+            
+            foreach ($test_endpoints as $endpoint) {
+                try {
+                    Utils::log("Testing connection with endpoint: {$endpoint}", Constants::LOG_LEVEL_DEBUG);
+                    
+                    if ($endpoint === '/events') {
+                        // Для events добавляем лимит чтобы минимизировать нагрузку
+                        $response = $this->get($endpoint, ['limit' => 1]);
+                    } else {
+                        $response = $this->get($endpoint);
+                    }
+                    
+                    // Если дошли до сюда без исключения - подключение работает
+                    Utils::log("Connection test successful with endpoint: {$endpoint}", Constants::LOG_LEVEL_INFO);
+                    return true;
+                    
+                } catch (\Exception $e) {
+                    $last_error = $e;
+                    Utils::log("Endpoint {$endpoint} failed: " . $e->getMessage(), Constants::LOG_LEVEL_DEBUG);
+                    continue;
+                }
+            }
+            
+            // Если все endpoints failed
+            if ($last_error) {
+                throw $last_error;
+            }
+            
+            return false;
+            
         } catch ( \Exception $e ) {
-            Utils::log( 'Connection test failed: ' . $e->getMessage(), Constants::LOG_LEVEL_ERROR );
+            $error_msg = 'Connection test failed: ' . $e->getMessage();
+            Utils::log($error_msg, Constants::LOG_LEVEL_ERROR);
+            
+            // Добавляем подробную диагностику
+            $config = $this->get_config_status();
+            Utils::log('API Configuration: ' . wp_json_encode($config), Constants::LOG_LEVEL_DEBUG);
+            
             return false;
         }
     }

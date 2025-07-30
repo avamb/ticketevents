@@ -89,21 +89,68 @@ class SettingsPage {
      * Render the settings page HTML
      */
     public function render_page(): void {
-        // Proper permission check - only allow users with manage_options capability
-        if ( ! current_user_can( 'manage_options' ) ) {
+        // РАСШИРЕННАЯ диагностика прав пользователя
+        $user = wp_get_current_user();
+        $can_manage = current_user_can( 'manage_options' );
+        
+        // Всегда логируем подробную информацию
+        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+            error_log( '[Bil24] === ДИАГНОСТИКА ПРАВ ПОЛЬЗОВАТЕЛЯ ===' );
+            error_log( '[Bil24] User ID: ' . $user->ID );
+            error_log( '[Bil24] User login: ' . $user->user_login );
+            error_log( '[Bil24] User roles: ' . implode( ', ', $user->roles ) );
+            error_log( '[Bil24] Can manage_options: ' . ( $can_manage ? 'YES' : 'NO' ) );
+            error_log( '[Bil24] Is user logged in: ' . ( is_user_logged_in() ? 'YES' : 'NO' ) );
+            error_log( '[Bil24] Is admin: ' . ( is_admin() ? 'YES' : 'NO' ) );
+            error_log( '[Bil24] Is super admin: ' . ( is_super_admin() ? 'YES' : 'NO' ) );
+            
+            // Проверяем другие важные права
+            $other_caps = ['administrator', 'edit_plugins', 'activate_plugins', 'switch_themes'];
+            foreach ( $other_caps as $cap ) {
+                error_log( "[Bil24] Can {$cap}: " . ( current_user_can( $cap ) ? 'YES' : 'NO' ) );
+            }
+            
+            // Показываем первые 10 прав пользователя
+            $user_caps = array_keys( array_filter( $user->allcaps ) );
+            error_log( '[Bil24] First 10 user capabilities: ' . implode( ', ', array_slice( $user_caps, 0, 10 ) ) );
+        }
+        
+        // Если нет прав - показываем подробную ошибку
+        if ( ! $can_manage ) {
+            $error_message = sprintf(
+                __( 'Sorry, you are not allowed to access this page. User ID: %d, Roles: %s, Can manage_options: %s', 'bil24' ),
+                $user->ID,
+                implode( ', ', $user->roles ),
+                $can_manage ? 'YES' : 'NO'
+            );
+            
+            $error_title = __( 'Access Denied - Bil24 Connector', 'bil24' );
+            
+            // Добавляем дополнительную информацию для диагностики
+            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                $error_message .= '<br><br><strong>Диагностическая информация:</strong><br>';
+                $error_message .= 'Logged in: ' . ( is_user_logged_in() ? 'YES' : 'NO' ) . '<br>';
+                $error_message .= 'Is admin: ' . ( is_admin() ? 'YES' : 'NO' ) . '<br>';
+                $error_message .= 'Is super admin: ' . ( is_super_admin() ? 'YES' : 'NO' ) . '<br>';
+                $error_message .= 'WordPress version: ' . get_bloginfo( 'version' ) . '<br>';
+                $error_message .= 'Is multisite: ' . ( is_multisite() ? 'YES' : 'NO' ) . '<br>';
+                
+                if ( is_multisite() ) {
+                    $error_message .= 'Current blog ID: ' . get_current_blog_id() . '<br>';
+                    $error_message .= 'Network admin: ' . ( is_network_admin() ? 'YES' : 'NO' ) . '<br>';
+                }
+            }
+            
             wp_die( 
-                __( 'Sorry, you are not allowed to access this page.', 'bil24' ),
-                __( 'Access Denied', 'bil24' ),
+                $error_message,
+                $error_title,
                 [ 'response' => 403 ]
             );
         }
         
-        // Debug logging
+        // Debug logging для успешного доступа
         if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            $user = wp_get_current_user();
-            error_log( '[Bil24] Rendering settings page - User ID: ' . $user->ID );
-            error_log( '[Bil24] User roles: ' . implode( ', ', $user->roles ) );
-            error_log( '[Bil24] Can manage_options: ' . ( current_user_can( 'manage_options' ) ? 'YES' : 'NO' ) );
+            error_log( '[Bil24] ✅ User has manage_options capability - rendering settings page' );
         }
         
         // Get option name with fallback
@@ -190,17 +237,31 @@ class SettingsPage {
                     },
                     body: 'action=bil24_test_connection&_ajax_nonce=' + <?php echo wp_json_encode( wp_create_nonce( 'bil24_test_connection' ) ); ?>
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        result.innerHTML = '<div class="notice notice-success inline"><p><strong>' + 
-                            <?php echo wp_json_encode( __( 'Success!', 'bil24' ) ); ?> + 
-                            '</strong> ' + data.data.message + '</p></div>';
-                    } else {
-                        result.innerHTML = '<div class="notice notice-error inline"><p><strong>' + 
-                            <?php echo wp_json_encode( __( 'Error:', 'bil24' ) ); ?> + 
-                            '</strong> ' + data.data.message + '</p></div>';
+                .then(async response => {
+                    try {
+                        return await response.json();
+                    } catch (e) {
+                        // Не JSON – читаем как текст
+                        const text = await response.text();
+                        return { success: false, message: text || 'Non-JSON response' };
                     }
+                })
+                .then(data => {
+                    // Формируем сообщение с учётом разных структур ответа
+                    const success = data && typeof data.success !== 'undefined' ? data.success : false;
+                    const message = (data && data.data && typeof data.data.message !== 'undefined')
+                        ? data.data.message
+                        : (data && typeof data.message === 'string'
+                            ? data.message
+                            : <?php echo wp_json_encode( __( 'Unknown error. Check browser console for details.', 'bil24' ) ); ?>);
+
+                    const noticeClass = success ? 'notice-success' : 'notice-error';
+                    const noticeLabel = success
+                        ? <?php echo wp_json_encode( __( 'Success!', 'bil24' ) ); ?>
+                        : <?php echo wp_json_encode( __( 'Error:', 'bil24' ) ); ?>;
+
+                    result.innerHTML = '<div class="notice ' + noticeClass + ' inline"><p><strong>' +
+                        noticeLabel + '</strong> ' + message + '</p></div>';
                 })
                 .catch(error => {
                     result.innerHTML = '<div class="notice notice-error inline"><p><strong>' + 
@@ -242,6 +303,19 @@ class SettingsPage {
         }
 
         try {
+            // Проверяем настройки перед тестированием
+            $settings = get_option( Constants::OPTION_SETTINGS, [] );
+            $fid = $settings['fid'] ?? '';
+            $token = $settings['token'] ?? '';
+            $env = $settings['env'] ?? 'test';
+            
+            if ( empty( $fid ) || empty( $token ) ) {
+                wp_send_json_error( [
+                    'message' => __( 'Please configure FID and Token credentials first.', 'bil24' )
+                ] );
+                return;
+            }
+            
             // Load API Client if not already loaded
             if ( ! class_exists( '\\Bil24\\Api\\Client' ) ) {
                 $api_client_file = __DIR__ . '/../Api/Client.php';
@@ -253,18 +327,38 @@ class SettingsPage {
             }
             
             $api = new \Bil24\Api\Client();
+            
+            // Получаем информацию о конфигурации для диагностики
+            $config = $api->get_config_status();
+            
+            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                error_log( '[Bil24] Testing connection with config: ' . wp_json_encode( $config ) );
+            }
+            
             $connected = $api->test_connection();
             
             if ( $connected ) {
                 wp_send_json_success( [
-                    'message' => __( 'Connection to Bil24 API established successfully!', 'bil24' )
+                    'message' => sprintf(
+                        __( 'Connection to Bil24 API (%s environment) established successfully!', 'bil24' ),
+                        ucfirst( $env )
+                    )
                 ] );
             } else {
                 wp_send_json_error( [
-                    'message' => __( 'Failed to connect to Bil24 API. Please check your settings.', 'bil24' )
+                    'message' => sprintf(
+                        __( 'Failed to connect to Bil24 API (%s environment). Please check your FID and Token credentials.', 'bil24' ),
+                        ucfirst( $env )
+                    )
                 ] );
             }
         } catch ( \Exception $e ) {
+            // Логируем подробную ошибку
+            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                error_log( '[Bil24] Connection test exception: ' . $e->getMessage() );
+                error_log( '[Bil24] Exception trace: ' . $e->getTraceAsString() );
+            }
+            
             wp_send_json_error( [
                 'message' => sprintf( 
                     /* translators: %s: error message */

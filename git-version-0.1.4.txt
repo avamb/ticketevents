@@ -1,0 +1,17 @@
+Команды для коммита версии 0.1.4:
+
+git add bil24-connector.php
+git add includes/Constants.php  
+git add includes/Api/Client.php
+git add includes/Admin/SettingsPage.php
+git add test-api-connection.php
+git add test-bil24-format.php
+git add BIL24-API-FORMAT-FIX.md
+git add CHANGELOG.md
+
+git commit -m "Release v0.1.4: Критическое исправление Bil24 API формата"
+
+git tag -a v0.1.4 -m "Version 0.1.4 - Critical Bil24 API format fix"
+
+git push origin main
+git push origin v0.1.4

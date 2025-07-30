@@ -1,0 +1,13 @@
+Команды для коммита исправления 400 Bad Request:
+
+git add includes/Integrations/WooCommerce/Integration.php
+git add includes/Admin/SettingsPage.php  
+git add test-ajax-handler.php
+git add CRITICAL-DEBUG-GUIDE.md
+git add FIX-400-BAD-REQUEST.md
+git add fix-400-error.bat
+git add git-commands-400-fix.txt
+
+git commit -m "КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: 400 Bad Request в Connection Test - убран конфликт AJAX хуков"
+
+git push origin main
